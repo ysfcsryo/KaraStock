@@ -10,6 +10,7 @@ class History extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'nama_produk',
         'kategori',       // <--- INI WAJIB ADA
         'kelas_harga',    // <--- INI WAJIB ADA
@@ -20,4 +21,12 @@ class History extends Model
         'warna',
         'nama_file'
     ];
+
+    /**
+     * Get the user that uploaded this data
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -2040,6 +2040,15 @@ nav.navbar:hover {
 }
 
 /* ========================
+   SIDEBAR LOGO TREATMENT
+   ======================== */
+/* Jadikan logo di sidebar berwarna putih tanpa mengubah logo di tempat lain */
+#sidebar-wrapper .brand-container img {
+    /* Hilangkan warna lalu ubah ke putih */
+    filter: saturate(0) brightness(0) invert(1);
+}
+
+/* ========================
    PROFILE DROPDOWN IN SIDEBAR
    ======================== */
 

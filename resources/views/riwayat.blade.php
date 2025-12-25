@@ -72,6 +72,14 @@
                                                 -
                                             @endif
                                         </small>
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-person-fill"></i> 
+                                            @if(isset($fileUploaders[$f]) && $fileUploaders[$f])
+                                                {{ $fileUploaders[$f]->name }}
+                                            @else
+                                                <span class="text-muted fst-italic">Tidak diketahui</span>
+                                            @endif
+                                        </small>
                                     </div>
                                 </div>
                             </a>

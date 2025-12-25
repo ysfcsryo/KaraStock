@@ -61,6 +61,13 @@
                     <span class="menu-text">Riwayat Analisa</span>
                 </a>
 
+                @if(Auth::check() && Auth::user()->role === 'super_admin')
+                <a class="list-group-item list-group-item-action {{ Request::is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
+                    <i class="bi bi-people-fill me-2"></i>
+                    <span class="menu-text">Kelola User</span>
+                </a>
+                @endif
+
                 <!-- Spacer untuk push ke bawah -->
                 <div style="flex: 1;"></div>
 

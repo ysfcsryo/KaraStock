@@ -1,388 +1,326 @@
-# 🎯 KaraStock - Sistem Prediksi Stok Penjualan
+# 🎯 KaraStock - Decision Support System
 
-## Decision Tree ID3 Algorithm (Pure PHP Implementation)
+**Sistem Prediksi Stok Cerdas untuk UMKM Lapak Karawo**
 
-Sistem prediksi dan klasifikasi stok penjualan berbasis algoritma **Decision Tree ID3** murni (tanpa library eksternal) dengan preprocessing otomatis untuk data RAW.
+![Laravel](https://img.shields.io/badge/Laravel-10.x-red?style=flat-square&logo=laravel)
+![PHP](https://img.shields.io/badge/PHP-8.1+-blue?style=flat-square&logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-5.7+-orange?style=flat-square&logo=mysql)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-purple?style=flat-square&logo=bootstrap)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+
+---
+
+## 📖 Tentang KaraStock
+
+KaraStock adalah **Decision Support System (DSS)** berbasis web yang dirancang untuk membantu UMKM Lapak Karawo dalam memprediksi dan mengelola stok produk Karawo menggunakan algoritma **Decision Tree**.
+
+Sistem ini membantu pemilik dan staff toko untuk:
+
+-   ✅ Memprediksi produk mana yang perlu di-**restock segera**
+-   ✅ Mengetahui produk mana yang **stoknya berlebih**
+-   ✅ Mengoptimalkan **rotasi stok** berdasarkan data penjualan
+-   ✅ Membuat **keputusan bisnis yang data-driven**
 
 ---
 
 ## ✨ Fitur Utama
 
-### 🤖 **Preprocessing Otomatis**
-
--   Input data RAW (Harga, Terjual, Lama Barang)
--   Sistem otomatis convert ke fitur kategoris
--   Threshold customizable sesuai bisnis
-
-### 🧠 **Pure ID3 Algorithm**
-
--   Shannon Entropy calculation
--   Information Gain untuk split decision
--   Recursive tree building
--   No external ML libraries
-
-### 📊 **Complete ML Pipeline**
-
--   CSV Upload dengan validasi
--   Automatic feature engineering
--   Model training & evaluation
--   Prediction & classification
--   Tree visualization dengan IG values
-
-### 🎨 **Premium UI/UX**
-
--   Modern responsive design
--   Glassmorphism effects
--   Interactive animations
--   Mobile-first approach
--   Premium color palette (no clash)
+| Fitur                    | Deskripsi                                       |
+| ------------------------ | ----------------------------------------------- |
+| 🤖 **AI Prediction**     | Algoritma Decision Tree untuk prediksi otomatis |
+| 📤 **Upload CSV**        | Import data penjualan dalam format CSV          |
+| 📊 **Visualisasi**       | Chart & grafik interaktif (Pie & Bar Chart)     |
+| 👥 **User Management**   | Role-based access (Super Admin & Admin)         |
+| 📜 **Riwayat Lengkap**   | Tracking siapa upload apa dan kapan             |
+| 🎨 **Responsive Design** | Bisa diakses dari desktop & mobile              |
+| 🔐 **Secure Auth**       | Login aman dengan hashed password               |
 
 ---
 
-## 📋 Format Data CSV (v2.0 - UPGRADE)
+## 🚀 Quick Start
 
-### ✅ Format Baru - Data RAW
+### 📋 Prerequisites
 
-Sistem sekarang menerima data mentah dan preprocessing otomatis:
+Pastikan sudah terinstall:
 
-```csv
-Nama,Kategori,Harga,Terjual,Lama Barang
-Kemeja Batik Gorontalo,Kemeja,175000,48,25
-Blus Tenun Karawo Merah,Blus,220000,15,85
-Celana Karawo Hitam,Celana,195000,42,18
-```
+-   **PHP** >= 8.1
+-   **Composer**
+-   **MySQL** >= 5.7
+-   **Node.js** & NPM (opsional)
 
-**Preprocessing Otomatis:**
-
--   **Harga** → Kelas Harga (Ekonomis/Standar/Premium)
--   **Terjual** → Performa Jual (Macet/Sedang/Laris)
--   **Lama Barang** → Durasi Endap (Baru/Normal/Lama)
-
-### 📝 Format Training (Opsional dengan Label)
-
-```csv
-Nama,Kategori,Harga,Terjual,Lama Barang,Target Class
-Kemeja A,Kemeja,175000,45,20,Prioritas Utama
-Blus B,Blus,280000,8,110,Dead Stock
-```
-
----
-
-## 🚀 Teknologi
-
--   **Backend:** Laravel 10.x
--   **Frontend:** Bootstrap 5.3, Blade Templates
--   **Algorithm:** Pure PHP ID3 (Custom Implementation)
--   **Database:** MySQL
--   **Assets:** Vite, Animate.css
--   **Design:** Premium glassmorphism UI
-
----
-
-## 📦 Instalasi
-
-### 1. Clone Repository
+### 📦 Instalasi
 
 ```bash
-git clone <repository-url>
+# Clone repository
+git clone https://github.com/ysfcsryo/KaraStock.git
 cd KaraStock
-```
 
-### 2. Install Dependencies
-
-```bash
+# Install dependencies
 composer install
-```
 
-### 3. Environment Setup
-
-```bash
+# Setup environment
 cp .env.example .env
 php artisan key:generate
-```
 
-### 4. Database Configuration
-
-Edit `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=karastock
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### 5. Run Migration
-
-```bash
+# Setup database (edit .env dulu!)
 php artisan migrate
+
+# Buat user super admin
+php artisan tinker
 ```
 
-### 6. Sync CSS (Important!)
+Di tinker, jalankan:
 
-```bash
-# Windows
-sync-css.bat
-
-# Atau manual
-copy resources\css\app.css public\css\app.css
-php artisan cache:clear
+```php
+\App\Models\User::create([
+    'name' => 'Admin Lapak',
+    'email' => 'admin@karastock.com',
+    'password' => bcrypt('admin123'),
+    'role' => 'super_admin'
+]);
+exit
 ```
 
-### 7. Start Development Server
-
 ```bash
+# Jalankan server
 php artisan serve
 ```
 
-Buka: `http://localhost:8000`
+Akses di browser: **http://localhost:8000**
+
+**Login dengan:**
+
+-   Email: `admin@karastock.com`
+-   Password: `admin123`
 
 ---
 
-## 📚 Dokumentasi Lengkap
+## 📚 Dokumentasi
 
-| File                                                   | Deskripsi                             |
-| ------------------------------------------------------ | ------------------------------------- |
-| [CARA_KERJA_SISTEM.md](CARA_KERJA_SISTEM.md)           | Panduan lengkap format CSV & workflow |
-| [PREMIUM_DESIGN_SYSTEM.md](PREMIUM_DESIGN_SYSTEM.md)   | Color palette & design guidelines     |
-| [MOBILE_UX_IMPROVEMENTS.md](MOBILE_UX_IMPROVEMENTS.md) | Mobile responsive documentation       |
-| [REFRESH_PANDUAN.md](REFRESH_PANDUAN.md)               | Troubleshooting & CSS sync guide      |
+📁 **Semua dokumentasi ada di folder `/docs`**
 
----
+### 🎯 Untuk User
 
-## 🎯 Cara Penggunaan
+| Dokumen                                            | Deskripsi                            |
+| -------------------------------------------------- | ------------------------------------ |
+| **[📘 MANUAL_BOOK.md](docs/MANUAL_BOOK.md)**       | **Manual lengkap A-Z (WAJIB BACA!)** |
+| [🔐 QUICKSTART_LOGIN.md](docs/QUICKSTART_LOGIN.md) | Panduan login pertama kali           |
+| [📖 LOGIN_GUIDE.md](docs/LOGIN_GUIDE.md)           | Troubleshooting login                |
 
-### 1. **Upload Data CSV**
+### 🔧 Untuk Developer
 
--   Siapkan file CSV dengan format baru (data RAW)
--   Upload melalui menu **Input Data**
--   Sistem otomatis preprocessing & prediksi
+| Dokumen                                              | Deskripsi                   |
+| ---------------------------------------------------- | --------------------------- |
+| [📍 INDEX.md](docs/INDEX.md)                         | **Index semua dokumentasi** |
+| [⚙️ CARA_KERJA_SISTEM.md](docs/CARA_KERJA_SISTEM.md) | Algoritma & flow sistem     |
+| [📂 STRUKTUR_FOLDER.md](docs/STRUKTUR_FOLDER.md)     | Struktur folder project     |
+| [📂 FOLDER_STRUCTURE.md](docs/FOLDER_STRUCTURE.md)   | Detail struktur lengkap     |
+| [🔐 AUTH_UPDATE.md](docs/AUTH_UPDATE.md)             | Sistem autentikasi          |
 
-### 2. **Training Model ID3**
-
--   Menu **Evaluasi** → **Train Model**
--   Gunakan data dengan label (Target Class)
--   Model tersimpan di `storage/app/id3_model.json`
-
-### 3. **Lihat Hasil**
-
--   Menu **Hasil Analisa**
--   Filter berdasarkan kategori
--   Lihat distribusi prediksi
-
-### 4. **Visualisasi Tree**
-
--   Menu **Evaluasi** → **Visualisasi Tree**
--   Lihat struktur decision tree
--   Setiap node menampilkan Information Gain
+**👉 Mulai dari:** [docs/INDEX.md](docs/INDEX.md)
 
 ---
 
-## 🧮 Algoritma ID3
-
-### Shannon Entropy
-
-```
-H(S) = -Σ(p_i * log₂(p_i))
-```
-
-### Information Gain
-
-```
-IG(S, A) = H(S) - Σ(|Sv|/|S| * H(Sv))
-```
-
-### Tree Building
-
-1. Hitung entropy dataset
-2. Hitung IG untuk setiap fitur
-3. Pilih fitur dengan IG tertinggi
-4. Split data berdasarkan fitur terpilih
-5. Recursive untuk setiap subset
-6. Stop jika pure atau max depth
-
-**File Implementation:** `app/Services/ID3DecisionTree.php`
-
----
-
-## 📊 Target Classes
-
-| Class               | Deskripsi                       |
-| ------------------- | ------------------------------- |
-| **Prioritas Utama** | Produk hot seller, restock ASAP |
-| **Restock Normal**  | Produk stabil, restock rutin    |
-| **Pertahankan**     | Produk bagus, maintain stock    |
-| **Warning**         | Produk slow, perlu evaluasi     |
-| **Dead Stock**      | Produk macet, stop produksi     |
-
----
-
-## 🎨 Premium Design Features
-
--   **Color System:** Monochromatic indigo + complementary coral
--   **Shadows:** Multi-layer premium shadows (6 levels)
--   **Animations:** Cubic-bezier smooth transitions
--   **Glassmorphism:** Blur + saturation effects
--   **Responsive:** Mobile-first dengan burger menu slide
--   **Accessibility:** WCAG AA compliant
-
----
-
-## � Struktur Folder
+## 📁 Struktur Project
 
 ```
 KaraStock/
-├── app/                    # Source code aplikasi
+├── app/
 │   ├── Http/
-│   │   └── Controllers/    # Controllers (ProductController, AuthController)
-│   └── Models/            # Eloquent models (User, dll)
-│
-├── database/              # Database files
-│   ├── migrations/        # Database migrations
-│   └── seeders/          # Database seeders (UserSeeder)
-│
-├── public/               # Public assets (accessible via web)
-│   ├── assets/
-│   │   └── images/       # Logo dan gambar
-│   ├── css/             # Compiled CSS
-│   └── template_karastock.csv  # Template CSV download
-│
-├── resources/           # Source files
-│   ├── css/            # Source CSS (edit di sini)
-│   ├── js/             # Source JavaScript
-│   └── views/          # Blade templates
-│       ├── auth/       # Login & profile views
-│       └── layout/     # Main layout
-│
-├── routes/             # Route definitions
-│   └── web.php        # Web routes
-│
-├── storage/           # Storage files
-│   ├── app/          # Uploaded files
-│   └── logs/         # Application logs
-│
-├── docs/             # 📚 Dokumentasi lengkap
-│   ├── AUTH_UPDATE.md
-│   ├── CARA_KERJA_SISTEM.md
-│   ├── FORMAT_UPGRADE_GUIDE.md
-│   ├── LOGIN_GUIDE.md
-│   └── QUICKSTART_LOGIN.md
-│
-├── sample-data/      # 📊 Contoh file CSV
-│   ├── sample_data_raw.csv
-│   ├── sample_data_training.csv
-│   ├── sample_data_kategori.csv
-│   └── sample_data_training_kategori.csv
-│
-├── scripts/          # 🔧 Utility scripts
-│   ├── sync-css.bat         # Sync CSS ke public
-│   ├── generate_tree.php    # Generate decision tree
-│   └── simulate_upload.php  # Testing upload
-│
-└── README.md         # ← File ini (dokumentasi utama)
+│   │   ├── Controllers/      # Logic aplikasi
+│   │   └── Middleware/       # Auth & security
+│   └── Models/               # Database models
+├── database/
+│   └── migrations/           # Database schema
+├── docs/                     # 📚 DOKUMENTASI LENGKAP
+│   ├── INDEX.md             # Index semua docs
+│   └── MANUAL_BOOK.md       # Manual utama
+├── public/
+│   ├── assets/              # Images, files
+│   └── css/                 # Stylesheets
+├── resources/
+│   ├── views/               # Blade templates
+│   └── css/                 # Source CSS
+├── routes/
+│   └── web.php              # Route definitions
+├── sample-data/             # Contoh data CSV
+├── scripts/                 # Utility scripts
+└── storage/
+    └── uploads/             # Uploaded files
 ```
-
-### 📚 Dokumentasi
-
-Semua dokumentasi ada di folder `docs/`:
-
--   **LOGIN_GUIDE.md** - Panduan login sistem
--   **AUTH_UPDATE.md** - Detail sistem autentikasi
--   **QUICKSTART_LOGIN.md** - Quick start login
--   **CARA_KERJA_SISTEM.md** - Cara kerja Decision Tree
--   **FORMAT_UPGRADE_GUIDE.md** - Panduan format data
-
-### 📊 Sample Data
-
-File contoh CSV ada di folder `sample-data/`:
-
--   `sample_data_raw.csv` - Data mentah tanpa kategori
--   `sample_data_training.csv` - Data training
--   `sample_data_kategori.csv` - Data dengan kategori
--   Template resmi: `public/template_karastock.csv`
 
 ---
 
-## 🛠️ Development
+## 🎮 Cara Penggunaan
 
-### CSS Workflow
+### 1️⃣ Login
+
+-   Buka browser ke `http://localhost:8000/login`
+-   Masukkan email & password
+-   Klik "Login"
+
+### 2️⃣ Upload Data CSV
+
+-   Sidebar → **Upload & Analisa**
+-   Pilih file CSV (format di `sample-data/`)
+-   Klik "Upload & Analisa"
+
+### 3️⃣ Lihat Hasil
+
+-   Otomatis redirect ke **Hasil Analisa**
+-   Lihat tabel hasil prediksi
+-   Badge warna:
+    -   🔴 **SEGERA STOK** - Restock sekarang
+    -   🟢 **PERTAHANKAN** - Stok aman
+    -   🟡 **KURANGI STOK** - Terlalu banyak
+
+### 4️⃣ Kelola User (Super Admin Only)
+
+-   Sidebar → **Kelola User**
+-   Tambah, Edit, atau Hapus user
+-   Set role: Super Admin atau Admin
+
+---
+
+## 📊 Format Data CSV
+
+File CSV harus memiliki kolom berikut:
+
+```csv
+nama_produk,kategori,kelas_harga,performa_jual,durasi_endap
+Karawo Bunga Merah,pakaian,sedang,tinggi,cepat
+Karawo Motif Naga,aksesoris,mahal,rendah,lama
+```
+
+**Nilai yang Diterima:**
+
+| Kolom           | Nilai                          |
+| --------------- | ------------------------------ |
+| `kategori`      | pakaian / aksesoris / dekorasi |
+| `kelas_harga`   | murah / sedang / mahal         |
+| `performa_jual` | rendah / sedang / tinggi       |
+| `durasi_endap`  | cepat / sedang / lama          |
+
+📄 **Contoh file di:** `sample-data/sample_data_raw.csv`
+
+---
+
+## 🧠 Teknologi
+
+### Backend
+
+-   **Laravel 10.x** - PHP Framework
+-   **PHP-ML** - Machine Learning Library
+-   **MySQL** - Database
+
+### Frontend
+
+-   **Bootstrap 5.3.0** - UI Framework
+-   **Chart.js** - Data Visualization
+-   **Blade** - Template Engine
+
+### Tools
+
+-   **Composer** - PHP Dependency Manager
+-   **NPM** - Node Package Manager
+-   **Git** - Version Control
+
+---
+
+## 👥 User Roles
+
+| Role            | Akses                               |
+| --------------- | ----------------------------------- |
+| **Super Admin** | ✅ Semua fitur + Kelola User        |
+| **Admin**       | ✅ Upload, Analisa, Riwayat, Profil |
+
+---
+
+## 🛠️ Troubleshooting
+
+### ❌ Error "Class not found"
 
 ```bash
-# Edit CSS
-nano resources/css/app.css
-
-# Sync ke public (Windows)
-scripts\sync-css.bat
-
-# Clear cache
+composer dump-autoload
 php artisan cache:clear
 ```
 
-### Database Reset
+### ❌ Tidak bisa login
 
-```bash
-php artisan migrate:fresh
-php artisan db:seed --class=UserSeeder
-```
+-   Cek database: `SELECT * FROM users;`
+-   Reset password via tinker (lihat Instalasi)
 
-### Testing Upload
+### ❌ Chart tidak muncul
 
-```bash
-# Gunakan sample data
-# File ada di: sample-data/sample_data_raw.csv
+-   Refresh browser (Ctrl+F5)
+-   Cek console browser (F12)
+-   Pastikan koneksi internet (Chart.js dari CDN)
 
-# Atau jalankan simulate upload
-php scripts/simulate_upload.php
-```
+**📖 Lebih lengkap:** [docs/MANUAL_BOOK.md](docs/MANUAL_BOOK.md)
 
 ---
 
-## 🔐 Autentikasi
+## 🤝 Kontribusi
 
-Sistem dilengkapi dengan autentikasi user:
+Kontribusi sangat diterima! Silakan:
 
-**Default Login:**
-
-```
-Email    : admin@karastock.com
-Password : admin123
-```
-
-**Fitur:**
-
--   ✅ Login dengan validasi
--   ✅ Remember me
--   ✅ Profile user
--   ✅ Logout
--   ✅ Protected routes
-
-Lihat dokumentasi lengkap di: `docs/LOGIN_GUIDE.md`
+1. Fork repository
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
 
 ---
 
-## 📄 License
+## 📝 License
 
-MIT License - Feel free to use for learning or commercial projects.
-
----
-
-## 👨‍💻 Credits
-
-**Developed with ❤️ using:**
-
--   Laravel Framework
--   Pure PHP (No ML Libraries)
--   Bootstrap 5
--   Custom ID3 Algorithm
-
-**Design Philosophy:**
-
-> "Simplicity is sophistication. Premium feel without complexity."
+Project ini menggunakan lisensi **MIT License**.
 
 ---
 
-**Version:** 2.0 (Preprocessing Otomatis)  
-**Last Updated:** 25 Desember 2025  
-**Status:** ✅ Production Ready
+## 📞 Kontak
+
+**Developer:** KaraStock Team  
+**Email:** support@karastock.com  
+**GitHub:** [@ysfcsryo](https://github.com/ysfcsryo)  
+**Repository:** [KaraStock](https://github.com/ysfcsryo/KaraStock)
+
+---
+
+## 🎉 Credits
+
+Dikembangkan dengan ❤️ untuk membantu UMKM Lapak Karawo mengoptimalkan manajemen stok.
+
+**Special Thanks:**
+
+-   Laravel Community
+-   PHP-ML Contributors
+-   Bootstrap Team
+-   Chart.js Team
+
+---
+
+## 📈 Changelog
+
+### Version 1.0.0 (25 Des 2025)
+
+-   ✅ Decision Tree algorithm implementation
+-   ✅ User management dengan role system
+-   ✅ Upload & analisa CSV
+-   ✅ Interactive charts (Pie & Bar)
+-   ✅ History tracking dengan info uploader
+-   ✅ Responsive design
+-   ✅ Profile management
+-   ✅ Complete documentation
+
+---
+
+<div align="center">
+
+**⭐ Star this repository jika bermanfaat!**
+
+**[📘 Baca Dokumentasi](docs/INDEX.md)** • **[🐛 Report Bug](https://github.com/ysfcsryo/KaraStock/issues)** • **[💡 Request Feature](https://github.com/ysfcsryo/KaraStock/issues)**
+
+_© 2025 KaraStock - Decision Support System_
+
+</div>

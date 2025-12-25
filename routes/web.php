@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,12 @@ Route::middleware('auth')->group(function () {
 
     // Hapus semua data
     Route::delete('/riwayat/hapus-semua', [ProductController::class, 'hapusSemua'])->name('riwayat.hapusSemua');
+    
+    // --- 5. ADMIN PANEL (Super Admin Only) ---
+    Route::middleware('check.super.admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('users', UserManagementController::class);
+        Route::post('users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
+    });
 });
 
 // --- Opsional: Testing ---

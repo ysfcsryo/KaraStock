@@ -95,6 +95,7 @@ class ProductController extends Controller
 
             // Simpan ke Database
             History::create([
+                'user_id'       => auth()->id(),
                 'nama_produk'   => $nama,
                 'kategori'      => $kategori,
                 'kelas_harga'   => $kelas,
@@ -224,21 +225,32 @@ class ProductController extends Controller
 
     public function riwayat(Request $request) 
     { 
-        $query = History::query();
+        $query = History::with('user');
         if ($request->has('file')) {
             $query->where('nama_file', $request->query('file'));
         }
         
-        // Ambil waktu upload untuk setiap file (file paling baru)
+        // Ambil waktu upload dan uploader untuk setiap file (file paling baru)
         $fileTimestamps = History::select('nama_file', \DB::raw('MAX(created_at) as latest_upload'))
             ->groupBy('nama_file')
             ->get()
             ->pluck('latest_upload', 'nama_file');
         
+        // Ambil user yang mengupload setiap file (dari data paling baru)
+        $fileUploaders = History::with('user')
+            ->whereIn('id', function($query) {
+                $query->select(\DB::raw('MAX(id)'))
+                    ->from('histories')
+                    ->groupBy('nama_file');
+            })
+            ->get()
+            ->pluck('user', 'nama_file');
+        
         return view('riwayat', [
             'histories' => $query->latest()->get(),
             'files' => History::distinct()->pluck('nama_file'),
-            'fileTimestamps' => $fileTimestamps
+            'fileTimestamps' => $fileTimestamps,
+            'fileUploaders' => $fileUploaders
         ]); 
     }
 

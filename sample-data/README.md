@@ -1,85 +1,93 @@
-# Sample Data - KaraStock
+# 📊 Sample Data CSV
 
-Folder ini berisi contoh file CSV untuk testing dan demonstrasi sistem KaraStock.
+Folder ini berisi file-file contoh CSV untuk upload dan testing sistem KaraStock.
 
-## File yang Tersedia
+---
 
-### 📊 Data Raw (Mentah)
+## 📄 Daftar File
 
--   **sample_data_raw.csv** - Data mentah tanpa kategori
-    -   Format: Nama Produk, Kategori Harga, Kategori Performa, Kategori Durasi Endap, Klasifikasi
+| File | Deskripsi | Kegunaan |
+|------|-----------|----------|
+| **template_upload.csv** | 📝 Template kosong | Download untuk format upload |
+| **sample_data_raw.csv** | Data tanpa label | Upload & test prediksi AI |
+| **sample_data_training.csv** | Data dengan label | Training Decision Tree |
+| **sample_data_kategori.csv** | Data dengan kategori | Test filter kategori |
+| **sample_data_training_kategori.csv** | Training + kategori lengkap | Full training data |
 
-### 📈 Data Training
+---
 
--   **sample_data_training.csv** - Data training untuk model Decision Tree
-    -   Sudah termasuk klasifikasi untuk training algoritma
+## 📋 Format CSV yang Benar
 
-### 🏷️ Data Kategori
+### Header (Baris Pertama):
+```csv
+nama_produk,kategori,kelas_harga,performa_jual,durasi_endap
+```
 
--   **sample_data_kategori.csv** - Data dengan kategori lengkap
+### Contoh Data:
+```csv
+nama_produk,kategori,kelas_harga,performa_jual,durasi_endap
+Karawo Bunga Merah,pakaian,sedang,tinggi,cepat
+Karawo Motif Naga,aksesoris,mahal,rendah,lama
+Karawo Geometris,dekorasi,murah,sedang,sedang
+```
 
-    -   Format: Nama, Harga, Performa, Durasi, Klasifikasi
+---
 
--   **sample_data_training_kategori.csv** - Training data dengan kategori
-    -   Kombinasi kategori dan klasifikasi
+## ✅ Nilai yang Diterima
 
-## Cara Menggunakan
+| Kolom | Nilai yang Valid |
+|-------|------------------|
+| **kategori** | `pakaian` / `aksesoris` / `dekorasi` |
+| **kelas_harga** | `murah` / `sedang` / `mahal` |
+| **performa_jual** | `rendah` / `sedang` / `tinggi` |
+| **durasi_endap** | `cepat` / `sedang` / `lama` |
 
-1. **Untuk Testing Upload**
+### Kolom Opsional:
+- **label** - Status sudah diketahui (untuk training): `SEGERA STOK` / `PERTAHANKAN` / `KURANGI STOK`
 
-    - Gunakan salah satu file CSV di atas
-    - Upload melalui halaman "Upload & Analisa"
-    - Sistem akan memproses dan menampilkan hasil
+---
 
-2. **Untuk Template**
+## 🚀 Cara Menggunakan
 
-    - Template resmi ada di: `public/template_karastock.csv`
-    - Download dari halaman upload
+### 1️⃣ Download Template
+- Gunakan **template_upload.csv** sebagai template
+- Isi data produk Anda sesuai format
 
-3. **Format Data**
-    ```
-    Nama Produk,Kategori Harga,Kategori Performa,Kategori Durasi Endap,Klasifikasi
-    Produk A,Murah,Tinggi,Cepat,Restock Segera
-    ```
+### 2️⃣ Upload File
+- Login ke sistem
+- Menu: **Upload & Analisa**
+- Pilih file CSV
+- Klik "Upload & Analisa"
 
-## Kategori yang Valid
+### 3️⃣ Lihat Hasil
+- Sistem akan otomatis redirect ke **Hasil Analisa**
+- Lihat prediksi untuk setiap produk
 
-### Kategori Harga
+---
 
--   Murah (< Rp 10,000)
--   Sedang (Rp 10,000 - Rp 50,000)
--   Mahal (> Rp 50,000)
+## 📌 Tips
 
-### Kategori Performa
+- **Jangan ubah header** - Harus sesuai format
+- **Gunakan huruf kecil** - untuk kategori, kelas_harga, dll
+- **Cek validasi** - Pastikan nilai sesuai yang diterima
+- **Test dulu** - Pakai sample data sebelum upload data asli
 
--   Rendah (< 10 unit/bulan)
--   Sedang (10-50 unit/bulan)
--   Tinggi (> 50 unit/bulan)
+---
 
-### Kategori Durasi Endap
+## 🆘 Troubleshooting
 
--   Cepat (< 7 hari)
--   Sedang (7-30 hari)
--   Lama (> 30 hari)
+**Error: "Invalid format"**
+- Cek header CSV sesuai format
+- Pastikan delimiter menggunakan koma (,)
 
-### Klasifikasi Hasil
+**Error: "Invalid value"**
+- Cek nilai kategori, kelas_harga, performa_jual, durasi_endap
+- Harus sesuai nilai yang valid (lihat tabel di atas)
 
--   Restock Segera
--   Restock Terjadwal
--   Stok Optimal
--   Perlu Evaluasi
--   Stok Mati
+**Data tidak muncul:**
+- Refresh halaman hasil analisa
+- Cek database apakah data tersimpan
 
-## Tips
+---
 
-💡 **Gunakan sample data ini untuk**:
-
--   Testing sistem Decision Tree
--   Memahami format CSV yang benar
--   Eksperimen dengan berbagai kategori
--   Training dan evaluasi model
-
-⚠️ **Jangan**:
-
--   Upload data production ke sample data folder ini
--   Edit file sample (buat copy jika ingin modifikasi)
+**📖 Untuk panduan lengkap, baca [Manual Book](../docs/MANUAL_BOOK.md)**
