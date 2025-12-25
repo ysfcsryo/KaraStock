@@ -21,6 +21,15 @@
         transition: all 0.3s ease;
         overflow: hidden;
         height: 100%;
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .user-card .card-body {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
     }
     
     .user-card:hover {
@@ -66,16 +75,17 @@
     }
     
     .user-avatar {
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         border-radius: 50%;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         color: white;
         font-weight: 700;
+        flex-shrink: 0;
     }
     
     .stats-card {
@@ -137,14 +147,14 @@
         @foreach($users as $user)
         <div class="col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-4 d-flex">
             <div class="user-card card w-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start mb-3">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex align-items-start mb-4">
                         <div class="user-avatar me-3">
                             {{ strtoupper(substr($user->name, 0, 1)) }}
                         </div>
                         <div class="flex-grow-1">
-                            <h5 class="mb-1 fw-bold">{{ $user->name }}</h5>
-                            <p class="text-muted small mb-2">
+                            <h5 class="mb-2 fw-bold">{{ $user->name }}</h5>
+                            <p class="text-muted small mb-2" style="line-height: 1.4;">
                                 <i class="bi bi-envelope me-1"></i>{{ $user->email }}
                             </p>
                             <span class="role-badge role-{{ $user->role }}">
@@ -153,7 +163,7 @@
                         </div>
                     </div>
 
-                    <div class="small text-muted mb-3">
+                    <div class="small text-muted mb-3 flex-grow-1">
                         <div class="mb-1">
                             <i class="bi bi-calendar-check me-1"></i>
                             Bergabung: {{ $user->created_at->format('d M Y') }}
@@ -164,7 +174,7 @@
                         </div>
                     </div>
 
-                    <div class="d-flex gap-2" style="min-height: 38px;">
+                    <div class="d-flex gap-2 mt-auto" style="min-height: 38px;">
                         @if($user->id !== auth()->id() || $user->role === 'super_admin')
                         <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-primary flex-grow-1">
                             <i class="bi bi-pencil me-1"></i>Edit
