@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\History;
-use Illuminate\Support\Facades\DB; // Tambahan untuk query Group By
-use Phpml\Classification\DecisionTree;
+use Illuminate\Support\Facades\DB;
+use App\Services\ID3DecisionTree;
 
 class ProductController extends Controller
 {
@@ -38,23 +38,37 @@ class ProductController extends Controller
 
         $semua_hasil = [];
         
-        // Coba load model AI jika ada (Opsional)
-        $modelPath = storage_path('app/dt_model.serialize');
+        // Load ID3 model jika ada
+        $modelPath = storage_path('app/id3_model.json');
         $classifier = null;
         if (file_exists($modelPath)) {
-            $classifier = @unserialize(file_get_contents($modelPath));
+            try {
+                $modelData = json_decode(file_get_contents($modelPath), true);
+                $classifier = new ID3DecisionTree();
+                // Load trained tree dari file
+                $reflection = new \ReflectionClass($classifier);
+                $treeProperty = $reflection->getProperty('tree');
+                $treeProperty->setAccessible(true);
+                $treeProperty->setValue($classifier, $modelData['tree']);
+                
+                $featureNamesProperty = $reflection->getProperty('featureNames');
+                $featureNamesProperty->setAccessible(true);
+                $featureNamesProperty->setValue($classifier, $modelData['feature_names']);
+            } catch (\Exception $e) {
+                $classifier = null;
+            }
         }
 
         while (($row = fgetcsv($file_handle)) !== false) {
-            // Validasi baris data minimal 6 kolom
-            if (count($row) < 6) continue;
+            // Validasi baris data minimal 5 kolom (Nama, Kategori, Kelas, Performa, Durasi)
+            if (count($row) < 5) continue;
 
-            $nama       = $row[1] ?? 'Tanpa Nama';
-            $kategori   = $row[2] ?? '-';
-            $kelas      = $row[3] ?? '-';
-            $performa   = $row[4] ?? '-';
-            $durasi     = $row[5] ?? '-';
-            $csvLabel   = $row[6] ?? null; 
+            $nama       = $row[0] ?? 'Tanpa Nama';  // Kolom 1: Nama Produk
+            $kategori   = $row[1] ?? '-';            // Kolom 2: Kategori
+            $kelas      = $row[2] ?? '-';            // Kolom 3: Kelas Harga
+            $performa   = $row[3] ?? '-';            // Kolom 4: Performa
+            $durasi     = $row[4] ?? '-';            // Kolom 5: Durasi Endap
+            $csvLabel   = $row[5] ?? null;           // Kolom 6 (opsional): Target Class untuk training
 
             // Encode data untuk prediksi
             $fiturPrediksi = [
@@ -215,9 +229,16 @@ class ProductController extends Controller
             $query->where('nama_file', $request->query('file'));
         }
         
+        // Ambil waktu upload untuk setiap file (file paling baru)
+        $fileTimestamps = History::select('nama_file', \DB::raw('MAX(created_at) as latest_upload'))
+            ->groupBy('nama_file')
+            ->get()
+            ->pluck('latest_upload', 'nama_file');
+        
         return view('riwayat', [
             'histories' => $query->latest()->get(),
-            'files' => History::distinct()->pluck('nama_file')
+            'files' => History::distinct()->pluck('nama_file'),
+            'fileTimestamps' => $fileTimestamps
         ]); 
     }
 
@@ -241,7 +262,7 @@ class ProductController extends Controller
     }
 
     // =========================================================================
-    // 6. EVALUASI MODEL (AI TRAINING)
+    // 6. EVALUASI MODEL (ID3 TRAINING)
     // =========================================================================
 
     public function evaluasi()
@@ -282,24 +303,33 @@ class ProductController extends Controller
             }
         }
 
-        // Train Model
-        $classifier = new DecisionTree();
-        $classifier->train($trainSamples, $trainLabels);
+        // Train Model dengan ID3 Algorithm
+        $classifier = new ID3DecisionTree();
+        $classifier->setMaxDepth(10);
+        $classifier->setMinSamplesSplit(2);
+        $classifier->train($trainSamples, $trainLabels, ['Kategori', 'Kelas', 'Performa', 'Durasi']);
         
-        // Simpan Model
-        file_put_contents(storage_path('app/dt_model.serialize'), serialize($classifier));
+        // Simpan Model sebagai JSON
+        $modelData = [
+            'tree' => $classifier->getTree(),
+            'feature_names' => ['Kategori', 'Kelas', 'Performa', 'Durasi'],
+            'trained_at' => now()->toDateTimeString()
+        ];
+        file_put_contents(storage_path('app/id3_model.json'), json_encode($modelData, JSON_PRETTY_PRINT));
 
         // Test Model
         $correct = 0; 
         $confusion = [];
         $uniqueLabels = array_unique($labels);
-        foreach ($uniqueLabels as $l) { $confusion[$l] = ['TP' => 0, 'FP' => 0, 'FN' => 0]; }
+        foreach ($uniqueLabels as $l) { $confusion[$l] = ['TP' => 0, 'FP' => 0, 'FN' => 0, 'TN' => 0]; }
 
         foreach ($testSamples as $k => $fitur) {
             $true = $testLabels[$k];
             $pred = $classifier->predict($fitur);
             
-            if (!isset($confusion[$pred])) $confusion[$pred] = ['TP' => 0, 'FP' => 0, 'FN' => 0];
+            if (!isset($confusion[$pred])) {
+                $confusion[$pred] = ['TP' => 0, 'FP' => 0, 'FN' => 0, 'TN' => 0];
+            }
             
             if ($pred === $true) { 
                 $correct++; 
@@ -313,6 +343,26 @@ class ProductController extends Controller
         $testCount = count($testSamples);
         $accuracy = $testCount > 0 ? $correct / $testCount : 0;
 
+        // Hitung metrics tambahan per class
+        $classMetrics = [];
+        foreach ($confusion as $class => $metrics) {
+            $precision = ($metrics['TP'] + $metrics['FP']) > 0 
+                ? $metrics['TP'] / ($metrics['TP'] + $metrics['FP']) 
+                : 0;
+            $recall = ($metrics['TP'] + $metrics['FN']) > 0 
+                ? $metrics['TP'] / ($metrics['TP'] + $metrics['FN']) 
+                : 0;
+            $f1 = ($precision + $recall) > 0 
+                ? 2 * ($precision * $recall) / ($precision + $recall) 
+                : 0;
+            
+            $classMetrics[$class] = [
+                'precision' => round($precision, 4),
+                'recall' => round($recall, 4),
+                'f1_score' => round($f1, 4)
+            ];
+        }
+
         return view('evaluasi', [
             'enough_data' => true,
             'total' => $total,
@@ -320,17 +370,25 @@ class ProductController extends Controller
             'test_count' => $testCount,
             'accuracy' => $accuracy,
             'confusion' => $confusion,
+            'class_metrics' => $classMetrics,
+            'algorithm' => 'ID3 Decision Tree'
         ]);
     }
 
     // =========================================================================
-    // 7. HELPER FUNCTIONS (ALGORITMA & LOGIKA)
+    // 7. HELPER FUNCTIONS (ALGORITMA ID3 & LOGIKA)
     // =========================================================================
-    
-    // (Tidak ada perubahan pada helper logic, tetap sama seperti sebelumnya)
 
-    private function bangunStrukturPohon($samples, $labels, $depth = 0)
+    /**
+     * Bangun struktur pohon ID3 untuk visualisasi
+     * Menggunakan algoritma ID3 murni dengan Information Gain
+     */
+    private function bangunStrukturPohon($samples, $labels, $depth = 0, $availableFeatures = null)
     {
+        if ($availableFeatures === null) {
+            $availableFeatures = range(0, 3); // 4 fitur: Kategori, Kelas, Performa, Durasi
+        }
+
         $total = count($labels);
         $counts = array_count_values($labels);
         $entropy = $this->hitungEntropy($counts, $total);
@@ -344,9 +402,43 @@ class ProductController extends Controller
             'css_class' => 'btn-light'
         ];
 
-        if ($entropy == 0 || $total < 2 || $depth >= 4) {
+        // Stopping Criteria 1: Pure node (entropy = 0)
+        if ($entropy == 0) {
+            $finalLabel = array_keys($counts)[0];
+            $node['label'] = $finalLabel . " (Pure)";
+            $node['is_leaf'] = true;
+            
+            $props = $this->getStatusProps($finalLabel);
+            $node['css_class'] = 'btn-' . $props['warna'];
+            return $node;
+        }
+
+        // Stopping Criteria 2: Sample terlalu sedikit
+        if ($total < 2) {
             $finalLabel = array_keys($counts, max($counts))[0];
-            $node['label'] = $finalLabel;
+            $node['label'] = $finalLabel . " (Min)";
+            $node['is_leaf'] = true;
+            
+            $props = $this->getStatusProps($finalLabel);
+            $node['css_class'] = 'btn-' . $props['warna'];
+            return $node;
+        }
+
+        // Stopping Criteria 3: Max depth
+        if ($depth >= 5) {
+            $finalLabel = array_keys($counts, max($counts))[0];
+            $node['label'] = $finalLabel . " (Depth)";
+            $node['is_leaf'] = true;
+            
+            $props = $this->getStatusProps($finalLabel);
+            $node['css_class'] = 'btn-' . $props['warna'];
+            return $node;
+        }
+
+        // Stopping Criteria 4: Tidak ada fitur tersisa
+        if (empty($availableFeatures)) {
+            $finalLabel = array_keys($counts, max($counts))[0];
+            $node['label'] = $finalLabel . " (No Features)";
             $node['is_leaf'] = true;
             
             $props = $this->getStatusProps($finalLabel);
@@ -355,33 +447,40 @@ class ProductController extends Controller
         }
 
         $features = ['Kategori', 'Kelas', 'Performa', 'Durasi'];
+        
+        // Cari best split menggunakan Information Gain (ID3)
         $bestSplit = null;
         $bestIdx = -1;
+        $bestGain = -1;
 
-        for ($i = 0; $i < 4; $i++) {
-            $split = $this->findBestSplit($samples, $labels, $i);
-            if ($bestSplit == null || $split['information_gain'] > $bestSplit['information_gain']) {
+        foreach ($availableFeatures as $i) {
+            $split = $this->findBestSplitID3($samples, $labels, $i, $entropy);
+            if ($split['information_gain'] > $bestGain) {
                 $bestSplit = $split;
                 $bestIdx = $i;
+                $bestGain = $split['information_gain'];
             }
         }
 
+        // Jika tidak ada gain positif, buat leaf
         if (!$bestSplit || $bestSplit['information_gain'] <= 0) {
             $finalLabel = array_keys($counts, max($counts))[0];
-            $node['label'] = $finalLabel;
+            $node['label'] = $finalLabel . " (No Gain)";
             $node['is_leaf'] = true;
             $props = $this->getStatusProps($finalLabel);
             $node['css_class'] = 'btn-' . $props['warna'];
             return $node;
         }
 
-        $node['label'] = $features[$bestIdx] . " (Gain: " . $bestSplit['information_gain'] . ")";
+        // Buat internal node
+        $node['label'] = $features[$bestIdx] . " (IG: " . number_format($bestSplit['information_gain'], 4) . ")";
         $node['is_leaf'] = false;
         $node['css_class'] = 'btn-secondary';
         
         $th = $bestSplit['threshold'];
         $thLabel = $this->decodeValue($bestIdx, $th);
 
+        // Split data
         $lS = []; $lL = [];
         $rS = []; $rL = [];
         foreach ($samples as $k => $s) {
@@ -392,13 +491,17 @@ class ProductController extends Controller
             }
         }
 
+        // Remove fitur yang sudah dipakai (pure ID3)
+        $remainingFeatures = array_diff($availableFeatures, [$bestIdx]);
+
+        // Build child nodes
         if (count($lL) > 0) {
-            $childL = $this->bangunStrukturPohon($lS, $lL, $depth + 1);
+            $childL = $this->bangunStrukturPohon($lS, $lL, $depth + 1, $remainingFeatures);
             $childL['condition'] = "< " . $thLabel; 
             $node['children'][] = $childL;
         }
         if (count($rL) > 0) {
-            $childR = $this->bangunStrukturPohon($rS, $rL, $depth + 1);
+            $childR = $this->bangunStrukturPohon($rS, $rL, $depth + 1, $remainingFeatures);
             $childR['condition'] = ">= " . $thLabel;
             $node['children'][] = $childR;
         }
@@ -406,6 +509,10 @@ class ProductController extends Controller
         return $node;
     }
 
+    /**
+     * Hitung Entropy dan Information Gain lengkap untuk semua fitur
+     * Sesuai dengan algoritma ID3 standar
+     */
     private function hitungEntropyDanGainLengkap($samples, $labels)
     {
         $total = count($labels);
@@ -415,68 +522,113 @@ class ProductController extends Controller
         $results = [
             'entropy_root' => $entropyRoot,
             'label_distribution' => $labelCounts, 
-            'splits' => []
+            'splits' => [],
+            'algorithm' => 'ID3 (Information Gain)'
         ];
 
         $features = ['Kategori', 'Kelas Harga', 'Performa Jual', 'Durasi Endap'];
         for ($i = 0; $i < 4; $i++) {
-            $split = $this->findBestSplit($samples, $labels, $i);
+            $split = $this->findBestSplitID3($samples, $labels, $i, $entropyRoot);
             $split['fitur'] = $features[$i];
             $results['splits'][] = $split;
         }
 
+        // Sort berdasarkan Information Gain (descending)
+        usort($results['splits'], function($a, $b) {
+            return $b['information_gain'] <=> $a['information_gain'];
+        });
+
         return $results;
     }
 
-    private function findBestSplit($samples, $labels, $featureIndex)
+    /**
+     * Find best split untuk satu fitur menggunakan ID3
+     * ID3 menggunakan Information Gain = Entropy(parent) - Weighted Entropy(children)
+     */
+    private function findBestSplitID3($samples, $labels, $featureIndex, $entropyRoot)
     {
         $values = array_column($samples, $featureIndex);
         $unique = array_values(array_unique($values));
         sort($unique);
         
         $total = count($labels);
-        $entropyRoot = $this->hitungEntropy(array_count_values($labels), $total);
         $best = ['information_gain' => -1, 'threshold' => null];
 
         foreach ($unique as $val) {
-            $leftLabels = []; $rightLabels = [];
+            $leftLabels = []; 
+            $rightLabels = [];
+            
             foreach ($samples as $k => $s) {
-                if ($s[$featureIndex] < $val) $leftLabels[] = $labels[$k];
-                else $rightLabels[] = $labels[$k];
+                if ($s[$featureIndex] < $val) {
+                    $leftLabels[] = $labels[$k];
+                } else {
+                    $rightLabels[] = $labels[$k];
+                }
             }
 
-            $lCount = count($leftLabels); $rCount = count($rightLabels);
+            $lCount = count($leftLabels); 
+            $rCount = count($rightLabels);
+            
+            // Skip jika split tidak menghasilkan pembagian
             if ($lCount == 0 || $rCount == 0) continue;
 
+            // Hitung weighted entropy setelah split
             $lEnt = $this->hitungEntropy(array_count_values($leftLabels), $lCount);
             $rEnt = $this->hitungEntropy(array_count_values($rightLabels), $rCount);
             
-            $wEnt = ($lCount/$total)*$lEnt + ($rCount/$total)*$rEnt;
-            $gain = $entropyRoot - $wEnt;
+            $weightedEntropy = ($lCount/$total)*$lEnt + ($rCount/$total)*$rEnt;
+            
+            // Information Gain (ID3)
+            $gain = $entropyRoot - $weightedEntropy;
 
-            if ($gain >= $best['information_gain']) {
+            if ($gain > $best['information_gain']) {
                 $best = [
                     'threshold' => $val,
                     'threshold_label' => $this->decodeValue($featureIndex, $val),
-                    'information_gain' => round($gain, 5),
+                    'information_gain' => round($gain, 6),
+                    'weighted_entropy' => round($weightedEntropy, 6),
+                    'left_entropy' => round($lEnt, 6),
+                    'right_entropy' => round($rEnt, 6),
+                    'left_samples' => $lCount,
+                    'right_samples' => $rCount
                 ];
             }
         }
         
         if ($best['information_gain'] == -1) {
-            $best = ['threshold' => 0, 'threshold_label' => '-', 'information_gain' => 0];
+            $best = [
+                'threshold' => 0, 
+                'threshold_label' => '-', 
+                'information_gain' => 0,
+                'weighted_entropy' => $entropyRoot,
+                'left_entropy' => 0,
+                'right_entropy' => 0,
+                'left_samples' => 0,
+                'right_samples' => $total
+            ];
         }
+        
         return $best;
     }
 
+    /**
+     * Hitung Entropy menggunakan formula Shannon
+     * Entropy = -Σ(p_i * log2(p_i))
+     * 
+     * Entropy = 0 → Pure (semua data 1 class)
+     * Entropy = 1 → Maximum impurity (distribusi merata)
+     */
     private function hitungEntropy($counts, $total) {
         if ($total == 0) return 0;
+        
         $entropy = 0;
         foreach ($counts as $c) { 
+            if ($c == 0) continue;
             $p = $c / $total; 
             $entropy -= $p * log($p, 2); 
         }
-        return round($entropy, 4);
+        
+        return round($entropy, 6);
     }
 
     private function encodeKategori($val) { return crc32(strtolower(trim($val))); }
@@ -502,19 +654,19 @@ class ProductController extends Controller
 
     private function logikaManual($performa, $durasi) {
         $p = strtolower($performa); $d = strtolower($durasi);
-        if ($p == 'laris' && $d == 'baru') return 'Prioritas Utama';
-        if ($p == 'macet' && $d == 'lama') return 'Dead Stock';
-        if ($p == 'macet' && $d == 'normal') return 'Warning';
-        if ($p == 'sedang') return 'Restock Normal';
-        return 'Pertahankan';
+        if ($p == 'laris' && $d == 'baru') return 'Restock Segera';
+        if ($p == 'macet' && $d == 'lama') return 'Stok Mati';
+        if ($p == 'macet' && $d == 'normal') return 'Perlu Evaluasi';
+        if ($p == 'sedang') return 'Restock Terjadwal';
+        return 'Stok Optimal';
     }
 
     private function getStatusProps($status) {
         $s = strtolower(trim($status));
-        if (strpos($s, 'prioritas') !== false) return ['saran' => 'Tingkatkan stok.', 'warna' => 'success'];
-        if (strpos($s, 'dead') !== false)      return ['saran' => 'Diskon besar.', 'warna' => 'dark'];
-        if (strpos($s, 'warning') !== false)   return ['saran' => 'Promosi.', 'warna' => 'warning text-dark']; // Update warna bootstrap standard
-        if (strpos($s, 'restock') !== false)   return ['saran' => 'Stok standar.', 'warna' => 'info'];
-        return ['saran' => 'Pantau.', 'warna' => 'secondary'];
+        if (strpos($s, 'segera') !== false || strpos($s, 'prioritas') !== false) return ['saran' => 'Produksi/restock ASAP! Produk laris dan stok baru.', 'warna' => 'success'];
+        if (strpos($s, 'mati') !== false || strpos($s, 'dead') !== false)      return ['saran' => 'STOP produksi. Clearance sale/diskon besar.', 'warna' => 'dark'];
+        if (strpos($s, 'evaluasi') !== false || strpos($s, 'warning') !== false)   return ['saran' => 'Evaluasi harga/promosi. Penjualan macet.', 'warna' => 'warning text-dark'];
+        if (strpos($s, 'terjadwal') !== false || strpos($s, 'restock') !== false)   return ['saran' => 'Restock sesuai jadwal rutin. Penjualan steady.', 'warna' => 'info'];
+        return ['saran' => 'Maintain stok saat ini. Kondisi sudah baik.', 'warna' => 'secondary'];
     }
 }

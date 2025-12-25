@@ -1,66 +1,388 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎯 KaraStock - Sistem Prediksi Stok Penjualan
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Decision Tree ID3 Algorithm (Pure PHP Implementation)
 
-## About Laravel
+Sistem prediksi dan klasifikasi stok penjualan berbasis algoritma **Decision Tree ID3** murni (tanpa library eksternal) dengan preprocessing otomatis untuk data RAW.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🤖 **Preprocessing Otomatis**
 
-## Learning Laravel
+-   Input data RAW (Harga, Terjual, Lama Barang)
+-   Sistem otomatis convert ke fitur kategoris
+-   Threshold customizable sesuai bisnis
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🧠 **Pure ID3 Algorithm**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   Shannon Entropy calculation
+-   Information Gain untuk split decision
+-   Recursive tree building
+-   No external ML libraries
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 📊 **Complete ML Pipeline**
 
-## Laravel Sponsors
+-   CSV Upload dengan validasi
+-   Automatic feature engineering
+-   Model training & evaluation
+-   Prediction & classification
+-   Tree visualization dengan IG values
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 🎨 **Premium UI/UX**
 
-### Premium Partners
+-   Modern responsive design
+-   Glassmorphism effects
+-   Interactive animations
+-   Mobile-first approach
+-   Premium color palette (no clash)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+---
 
-## Contributing
+## 📋 Format Data CSV (v2.0 - UPGRADE)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### ✅ Format Baru - Data RAW
 
-## Code of Conduct
+Sistem sekarang menerima data mentah dan preprocessing otomatis:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```csv
+Nama,Kategori,Harga,Terjual,Lama Barang
+Kemeja Batik Gorontalo,Kemeja,175000,48,25
+Blus Tenun Karawo Merah,Blus,220000,15,85
+Celana Karawo Hitam,Celana,195000,42,18
+```
 
-## Security Vulnerabilities
+**Preprocessing Otomatis:**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   **Harga** → Kelas Harga (Ekonomis/Standar/Premium)
+-   **Terjual** → Performa Jual (Macet/Sedang/Laris)
+-   **Lama Barang** → Durasi Endap (Baru/Normal/Lama)
 
-## License
+### 📝 Format Training (Opsional dengan Label)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```csv
+Nama,Kategori,Harga,Terjual,Lama Barang,Target Class
+Kemeja A,Kemeja,175000,45,20,Prioritas Utama
+Blus B,Blus,280000,8,110,Dead Stock
+```
+
+---
+
+## 🚀 Teknologi
+
+-   **Backend:** Laravel 10.x
+-   **Frontend:** Bootstrap 5.3, Blade Templates
+-   **Algorithm:** Pure PHP ID3 (Custom Implementation)
+-   **Database:** MySQL
+-   **Assets:** Vite, Animate.css
+-   **Design:** Premium glassmorphism UI
+
+---
+
+## 📦 Instalasi
+
+### 1. Clone Repository
+
+```bash
+git clone <repository-url>
+cd KaraStock
+```
+
+### 2. Install Dependencies
+
+```bash
+composer install
+```
+
+### 3. Environment Setup
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+### 4. Database Configuration
+
+Edit `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=karastock
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 5. Run Migration
+
+```bash
+php artisan migrate
+```
+
+### 6. Sync CSS (Important!)
+
+```bash
+# Windows
+sync-css.bat
+
+# Atau manual
+copy resources\css\app.css public\css\app.css
+php artisan cache:clear
+```
+
+### 7. Start Development Server
+
+```bash
+php artisan serve
+```
+
+Buka: `http://localhost:8000`
+
+---
+
+## 📚 Dokumentasi Lengkap
+
+| File                                                   | Deskripsi                             |
+| ------------------------------------------------------ | ------------------------------------- |
+| [CARA_KERJA_SISTEM.md](CARA_KERJA_SISTEM.md)           | Panduan lengkap format CSV & workflow |
+| [PREMIUM_DESIGN_SYSTEM.md](PREMIUM_DESIGN_SYSTEM.md)   | Color palette & design guidelines     |
+| [MOBILE_UX_IMPROVEMENTS.md](MOBILE_UX_IMPROVEMENTS.md) | Mobile responsive documentation       |
+| [REFRESH_PANDUAN.md](REFRESH_PANDUAN.md)               | Troubleshooting & CSS sync guide      |
+
+---
+
+## 🎯 Cara Penggunaan
+
+### 1. **Upload Data CSV**
+
+-   Siapkan file CSV dengan format baru (data RAW)
+-   Upload melalui menu **Input Data**
+-   Sistem otomatis preprocessing & prediksi
+
+### 2. **Training Model ID3**
+
+-   Menu **Evaluasi** → **Train Model**
+-   Gunakan data dengan label (Target Class)
+-   Model tersimpan di `storage/app/id3_model.json`
+
+### 3. **Lihat Hasil**
+
+-   Menu **Hasil Analisa**
+-   Filter berdasarkan kategori
+-   Lihat distribusi prediksi
+
+### 4. **Visualisasi Tree**
+
+-   Menu **Evaluasi** → **Visualisasi Tree**
+-   Lihat struktur decision tree
+-   Setiap node menampilkan Information Gain
+
+---
+
+## 🧮 Algoritma ID3
+
+### Shannon Entropy
+
+```
+H(S) = -Σ(p_i * log₂(p_i))
+```
+
+### Information Gain
+
+```
+IG(S, A) = H(S) - Σ(|Sv|/|S| * H(Sv))
+```
+
+### Tree Building
+
+1. Hitung entropy dataset
+2. Hitung IG untuk setiap fitur
+3. Pilih fitur dengan IG tertinggi
+4. Split data berdasarkan fitur terpilih
+5. Recursive untuk setiap subset
+6. Stop jika pure atau max depth
+
+**File Implementation:** `app/Services/ID3DecisionTree.php`
+
+---
+
+## 📊 Target Classes
+
+| Class               | Deskripsi                       |
+| ------------------- | ------------------------------- |
+| **Prioritas Utama** | Produk hot seller, restock ASAP |
+| **Restock Normal**  | Produk stabil, restock rutin    |
+| **Pertahankan**     | Produk bagus, maintain stock    |
+| **Warning**         | Produk slow, perlu evaluasi     |
+| **Dead Stock**      | Produk macet, stop produksi     |
+
+---
+
+## 🎨 Premium Design Features
+
+-   **Color System:** Monochromatic indigo + complementary coral
+-   **Shadows:** Multi-layer premium shadows (6 levels)
+-   **Animations:** Cubic-bezier smooth transitions
+-   **Glassmorphism:** Blur + saturation effects
+-   **Responsive:** Mobile-first dengan burger menu slide
+-   **Accessibility:** WCAG AA compliant
+
+---
+
+## � Struktur Folder
+
+```
+KaraStock/
+├── app/                    # Source code aplikasi
+│   ├── Http/
+│   │   └── Controllers/    # Controllers (ProductController, AuthController)
+│   └── Models/            # Eloquent models (User, dll)
+│
+├── database/              # Database files
+│   ├── migrations/        # Database migrations
+│   └── seeders/          # Database seeders (UserSeeder)
+│
+├── public/               # Public assets (accessible via web)
+│   ├── assets/
+│   │   └── images/       # Logo dan gambar
+│   ├── css/             # Compiled CSS
+│   └── template_karastock.csv  # Template CSV download
+│
+├── resources/           # Source files
+│   ├── css/            # Source CSS (edit di sini)
+│   ├── js/             # Source JavaScript
+│   └── views/          # Blade templates
+│       ├── auth/       # Login & profile views
+│       └── layout/     # Main layout
+│
+├── routes/             # Route definitions
+│   └── web.php        # Web routes
+│
+├── storage/           # Storage files
+│   ├── app/          # Uploaded files
+│   └── logs/         # Application logs
+│
+├── docs/             # 📚 Dokumentasi lengkap
+│   ├── AUTH_UPDATE.md
+│   ├── CARA_KERJA_SISTEM.md
+│   ├── FORMAT_UPGRADE_GUIDE.md
+│   ├── LOGIN_GUIDE.md
+│   └── QUICKSTART_LOGIN.md
+│
+├── sample-data/      # 📊 Contoh file CSV
+│   ├── sample_data_raw.csv
+│   ├── sample_data_training.csv
+│   ├── sample_data_kategori.csv
+│   └── sample_data_training_kategori.csv
+│
+├── scripts/          # 🔧 Utility scripts
+│   ├── sync-css.bat         # Sync CSS ke public
+│   ├── generate_tree.php    # Generate decision tree
+│   └── simulate_upload.php  # Testing upload
+│
+└── README.md         # ← File ini (dokumentasi utama)
+```
+
+### 📚 Dokumentasi
+
+Semua dokumentasi ada di folder `docs/`:
+
+-   **LOGIN_GUIDE.md** - Panduan login sistem
+-   **AUTH_UPDATE.md** - Detail sistem autentikasi
+-   **QUICKSTART_LOGIN.md** - Quick start login
+-   **CARA_KERJA_SISTEM.md** - Cara kerja Decision Tree
+-   **FORMAT_UPGRADE_GUIDE.md** - Panduan format data
+
+### 📊 Sample Data
+
+File contoh CSV ada di folder `sample-data/`:
+
+-   `sample_data_raw.csv` - Data mentah tanpa kategori
+-   `sample_data_training.csv` - Data training
+-   `sample_data_kategori.csv` - Data dengan kategori
+-   Template resmi: `public/template_karastock.csv`
+
+---
+
+## 🛠️ Development
+
+### CSS Workflow
+
+```bash
+# Edit CSS
+nano resources/css/app.css
+
+# Sync ke public (Windows)
+scripts\sync-css.bat
+
+# Clear cache
+php artisan cache:clear
+```
+
+### Database Reset
+
+```bash
+php artisan migrate:fresh
+php artisan db:seed --class=UserSeeder
+```
+
+### Testing Upload
+
+```bash
+# Gunakan sample data
+# File ada di: sample-data/sample_data_raw.csv
+
+# Atau jalankan simulate upload
+php scripts/simulate_upload.php
+```
+
+---
+
+## 🔐 Autentikasi
+
+Sistem dilengkapi dengan autentikasi user:
+
+**Default Login:**
+
+```
+Email    : admin@karastock.com
+Password : admin123
+```
+
+**Fitur:**
+
+-   ✅ Login dengan validasi
+-   ✅ Remember me
+-   ✅ Profile user
+-   ✅ Logout
+-   ✅ Protected routes
+
+Lihat dokumentasi lengkap di: `docs/LOGIN_GUIDE.md`
+
+---
+
+## 📄 License
+
+MIT License - Feel free to use for learning or commercial projects.
+
+---
+
+## 👨‍💻 Credits
+
+**Developed with ❤️ using:**
+
+-   Laravel Framework
+-   Pure PHP (No ML Libraries)
+-   Bootstrap 5
+-   Custom ID3 Algorithm
+
+**Design Philosophy:**
+
+> "Simplicity is sophistication. Premium feel without complexity."
+
+---
+
+**Version:** 2.0 (Preprocessing Otomatis)  
+**Last Updated:** 25 Desember 2025  
+**Status:** ✅ Production Ready

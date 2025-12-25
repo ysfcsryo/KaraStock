@@ -182,7 +182,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
                             <h4 class="fw-bold mb-1">
-                                <i class="bi bi-graph-up-arrow" style="color: #6366f1;"></i> Evaluasi Model Decision Tree
+                                <i class="bi bi-graph-up-arrow icon-primary"></i> Evaluasi Model Decision Tree
                             </h4>
                             <p class="text-muted small mb-0">Analisis performa model dengan data training dan testing</p>
                         </div>
@@ -208,11 +208,11 @@
                             </div>
                             <div class="stat-card">
                                 <div class="stat-label"><i class="bi bi-book"></i> Data Training</div>
-                                <div class="stat-value" style="color: #6366f1;">{{ $train_count }}</div>
+                                <div class="stat-value stat-value-primary">{{ $train_count }}</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-label"><i class="bi bi-clipboard-check"></i> Data Testing</div>
-                                <div class="stat-value" style="color: #f97316;">{{ $test_count }}</div>
+                                <div class="stat-value stat-value-accent">{{ $test_count }}</div>
                             </div>
                         </div>
 
@@ -226,7 +226,7 @@
                         <!-- Confusion Matrix -->
                         <div class="confusion-container">
                             <h5 class="fw-bold mb-4">
-                                <i class="bi bi-grid-3x3-gap me-2" style="color: #6366f1;"></i>
+                                <i class="bi bi-grid-3x3-gap me-2 icon-primary"></i>
                                 Confusion Matrix
                             </h5>
                             <div class="table-responsive">
@@ -234,9 +234,9 @@
                                     <thead>
                                         <tr>
                                             <th class="text-start">Label Prediksi</th>
-                                            <th><i class="bi bi-check-circle" style="color: #10b981;"></i> TP</th>
-                                            <th><i class="bi bi-x-circle" style="color: #f97316;"></i> FP</th>
-                                            <th><i class="bi bi-exclamation-circle" style="color: #ef4444;"></i> FN</th>
+                                            <th><i class="bi bi-check-circle icon-success"></i> TP</th>
+                                            <th><i class="bi bi-x-circle icon-accent"></i> FP</th>
+                                            <th><i class="bi bi-exclamation-circle icon-danger"></i> FN</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -247,9 +247,9 @@
                                                     {{ str_replace('STOCK', 'STOK', $label) }}
                                                 </span>
                                             </td>
-                                            <td><strong style="color: #10b981;">{{ $row['TP'] }}</strong></td>
-                                            <td><strong style="color: #f97316;">{{ $row['FP'] }}</strong></td>
-                                            <td><strong style="color: #ef4444;">{{ $row['FN'] }}</strong></td>
+                                            <td><strong class="text-success-custom">{{ $row['TP'] }}</strong></td>
+                                            <td><strong class="text-accent-custom">{{ $row['FP'] }}</strong></td>
+                                            <td><strong class="text-danger-custom">{{ $row['FN'] }}</strong></td>
                                         </tr>
                                         @endforeach
                                     </tbody>

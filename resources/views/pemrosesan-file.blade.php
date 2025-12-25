@@ -46,60 +46,181 @@
             <div class="tab-content" id="treeTabContent">
                 <div class="tab-pane fade show active" id="grafik" role="tabpanel">
                     <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-body bg-white text-center" style="min-height: 500px; overflow: auto; background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px;">
-                            <svg id="treeSvg" width="1000" height="600"></svg>
+                        <div class="card-body bg-white text-center p-3" style="min-height: 500px; overflow: auto; background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px;">
+                            <div style="width: 100%; height: 100%; min-height: 500px; display: flex; justify-content: center; align-items: center;">
+                                <svg id="treeSvg" viewBox="0 0 1000 600" style="max-width: 100%; height: auto; min-height: 500px;"></svg>
+                            </div>
                         </div>
                         <div class="card-footer bg-light small text-muted">
-                            <i class="bi bi-info-circle"></i> <strong>Legenda:</strong> 
-                            <span class="badge bg-success mx-1">Prioritas</span>
-                            <span class="badge bg-dark mx-1">Dead Stock</span>
-                            <span class="badge bg-danger mx-1">Warning</span>
-                            <span class="badge bg-info mx-1">Restock</span>
-                            <span class="badge bg-secondary mx-1">Node Cabang</span>
+                            <i class="bi bi-info-circle"></i> <strong>Legenda Klasifikasi:</strong> 
+                            <span class="badge bg-success mx-1">Restock Segera</span>
+                            <span class="badge bg-info mx-1">Restock Terjadwal</span>
+                            <span class="badge bg-secondary mx-1">Stok Optimal</span>
+                            <span class="badge bg-warning text-dark mx-1">Perlu Evaluasi</span>
+                            <span class="badge bg-dark mx-1">Stok Mati</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="tab-pane fade" id="tabel-entropy" role="tabpanel">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-success-subtle text-success fw-bold">
-                            <i class="bi bi-table"></i> Detail Information Gain (Root Level)
+                    <!-- Penjelasan Entropy Root -->
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-info-subtle text-dark fw-bold">
+                            <i class="bi bi-calculator"></i> Perhitungan Entropy Root
                         </div>
-                        <div class="card-body p-0">
+                        <div class="card-body">
+                            <h6 class="fw-bold text-primary mb-3">Formula Shannon Entropy:</h6>
+                            <div class="alert alert-light border mb-3">
+                                <code class="text-dark">
+                                    H(S) = -Σ [p<sub>i</sub> × log₂(p<sub>i</sub>)]
+                                </code>
+                            </div>
+                            
+                            <h6 class="fw-bold mb-2">Breakdown Perhitungan:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Klasifikasi</th>
+                                            <th>Jumlah</th>
+                                            <th>Probabilitas (p)</th>
+                                            <th>log₂(p)</th>
+                                            <th>-p × log₂(p)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                            $totalData = array_sum($entropyGain['label_distribution'] ?? []);
+                                            $entropySum = 0;
+                                        @endphp
+                                        @foreach($entropyGain['label_distribution'] ?? [] as $label => $count)
+                                            @php
+                                                $probability = $totalData > 0 ? $count / $totalData : 0;
+                                                $logProb = $probability > 0 ? log($probability, 2) : 0;
+                                                $contribution = $probability > 0 ? -($probability * $logProb) : 0;
+                                                $entropySum += $contribution;
+                                            @endphp
+                                            <tr>
+                                                <td><span class="badge bg-secondary">{{ $label }}</span></td>
+                                                <td class="text-center">{{ $count }}</td>
+                                                <td class="text-center">{{ number_format($probability, 4) }}</td>
+                                                <td class="text-center">{{ number_format($logProb, 4) }}</td>
+                                                <td class="text-center fw-bold">{{ number_format($contribution, 6) }}</td>
+                                            </tr>
+                                        @endforeach
+                                        <tr class="table-success fw-bold">
+                                            <td colspan="4" class="text-end">Total Entropy Root:</td>
+                                            <td class="text-center">{{ number_format($entropySum, 6) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="alert alert-success mb-0">
+                                <i class="bi bi-info-circle"></i> 
+                                <strong>Interpretasi:</strong> Nilai entropy {{ number_format($entropySum, 4) }} menunjukkan tingkat ketidakpastian/kekacauan dalam data. 
+                                Semakin tinggi nilai, semakin acak distribusi klasifikasinya.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detail Information Gain -->
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-success-subtle text-success fw-bold">
+                            <i class="bi bi-table"></i> Detail Information Gain Per Atribut
+                        </div>
+                        <div class="card-body">
+                            <h6 class="fw-bold text-primary mb-3">Formula Information Gain:</h6>
+                            <div class="alert alert-light border mb-3">
+                                <code class="text-dark">
+                                    Gain(S, A) = H(S) - Σ [(|S<sub>v</sub>| / |S|) × H(S<sub>v</sub>)]
+                                </code>
+                                <br><small class="text-muted">
+                                    S = dataset, A = atribut, S<sub>v</sub> = subset untuk nilai v
+                                </small>
+                            </div>
+
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover mb-0 align-middle">
                                     <thead class="table-light">
                                         <tr>
                                             <th>Fitur</th>
                                             <th>Threshold</th>
-                                            <th>Gain</th>
-                                            <th>Keputusan</th>
+                                            <th>Weighted Entropy</th>
+                                            <th>Information Gain</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse($entropyGain['splits'] ?? [] as $split)
-                                        <tr class="{{ isset($entropyGain['best_root']) && $split['fitur'] === $entropyGain['best_root']['fitur'] ? 'table-success fw-bold' : '' }}">
-                                            <td>{{ $split['fitur'] }}</td>
+                                        <tr class="{{ isset($entropyGain['best_root']) && $split['fitur'] === $entropyGain['best_root']['fitur'] ? 'table-success' : '' }}">
+                                            <td class="fw-bold">{{ $split['fitur'] }}</td>
                                             <td>&lt; {{ $split['threshold_label'] }}</td>
                                             <td>
-                                                <span class="badge {{ $split['information_gain'] > 0 ? 'bg-success' : 'bg-secondary' }}">
-                                                    {{ $split['information_gain'] }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                @if(isset($entropyGain['best_root']) && $split['fitur'] === $entropyGain['best_root']['fitur'])
-                                                    <i class="bi bi-check-circle-fill text-success"></i> Root
+                                                @if(isset($split['weighted_entropy']))
+                                                    {{ number_format($split['weighted_entropy'], 6) }}
                                                 @else
                                                     -
                                                 @endif
                                             </td>
+                                            <td>
+                                                <span class="badge {{ $split['information_gain'] > 0 ? 'bg-success' : 'bg-secondary' }} px-3 py-2">
+                                                    {{ number_format($split['information_gain'], 6) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if(isset($entropyGain['best_root']) && $split['fitur'] === $entropyGain['best_root']['fitur'])
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-trophy-fill"></i> BEST (Root Node)
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
                                         </tr>
                                         @empty
-                                        <tr><td colspan="4" class="text-center text-muted">Tidak ada data perhitungan.</td></tr>
+                                        <tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data perhitungan</td></tr>
                                         @endforelse
                                     </tbody>
                                 </table>
                             </div>
+
+                            @if(isset($entropyGain['best_root']))
+                            <div class="alert alert-success mt-3 mb-0">
+                                <i class="bi bi-check-circle-fill"></i> 
+                                <strong>Kesimpulan:</strong> 
+                                Atribut <strong>"{{ $entropyGain['best_root']['fitur'] }}"</strong> dipilih sebagai Root Node 
+                                karena memiliki Information Gain tertinggi 
+                                <strong>({{ number_format($entropyGain['best_root']['information_gain'], 6) }})</strong>.
+                                Ini berarti atribut ini paling efektif dalam memisahkan data ke klasifikasi yang tepat.
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Penjelasan Algoritma -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-warning-subtle text-dark fw-bold">
+                            <i class="bi bi-lightbulb"></i> Cara Kerja Algoritma ID3
+                        </div>
+                        <div class="card-body">
+                            <ol class="mb-0">
+                                <li class="mb-2">
+                                    <strong>Hitung Entropy Root:</strong> Ukur ketidakpastian dataset awal menggunakan Shannon Entropy
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Hitung Information Gain:</strong> Untuk setiap atribut, hitung seberapa besar pengurangan entropy jika data dipisah berdasarkan atribut tersebut
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Pilih Best Split:</strong> Atribut dengan Information Gain tertinggi dipilih sebagai node pemisah
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Rekursif:</strong> Ulangi proses untuk setiap subset hingga semua data terklasifikasi atau entropy = 0
+                                </li>
+                                <li>
+                                    <strong>Build Tree:</strong> Hasilnya adalah pohon keputusan yang optimal untuk klasifikasi
+                                </li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -116,7 +237,7 @@
                         <span class="fw-bold fs-5 text-primary">{{ $entropyGain['entropy_root'] ?? 0 }}</span>
                     </div>
                     <hr>
-                    <small class="text-muted d-block mb-2">Distribusi Target Class:</small>
+                    <small class="text-muted d-block mb-2">Distribusi Klasifikasi Stok:</small>
                     <div class="d-flex flex-wrap gap-1">
                         @foreach($entropyGain['label_distribution'] ?? [] as $lbl => $cnt)
                             <span class="badge bg-light text-dark border">{{ $lbl }}: {{ $cnt }}</span>
@@ -137,7 +258,7 @@
                             <tr>
                                 <th>Produk</th>
                                 <th>Fitur (K/K/P/D)</th>
-                                <th>Target</th>
+                                <th>Klasifikasi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -158,10 +279,11 @@
                                     @php
                                         $badgeColor = 'bg-secondary';
                                         $s = strtolower($row->status);
-                                        if(strpos($s, 'prioritas')!==false) $badgeColor='bg-success';
-                                        elseif(strpos($s, 'dead')!==false) $badgeColor='bg-dark';
-                                        elseif(strpos($s, 'warning')!==false) $badgeColor='bg-danger';
-                                        elseif(strpos($s, 'restock')!==false) $badgeColor='bg-info';
+                                        if(strpos($s, 'segera')!==false) $badgeColor='bg-success';
+                                        elseif(strpos($s, 'mati')!==false) $badgeColor='bg-dark';
+                                        elseif(strpos($s, 'evaluasi')!==false) $badgeColor='bg-warning text-dark';
+                                        elseif(strpos($s, 'terjadwal')!==false) $badgeColor='bg-info';
+                                        elseif(strpos($s, 'optimal')!==false) $badgeColor='bg-secondary';
                                     @endphp
                                     <span class="badge {{ $badgeColor }}">{{ $row->status }}</span>
                                 </td>
@@ -195,6 +317,9 @@
         
         // --- 1. Pengecekan Keamanan (Safety Check) ---
         if(!svg) return;
+        
+        // Set responsive sizing
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
         // Jika data kosong atau null, tampilkan pesan error visual
         if (!treeData || Object.keys(treeData).length === 0) {
@@ -296,17 +421,31 @@
         nodes.forEach(n => {
             const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             
-            // Tentukan Warna
+            // Tentukan Warna berdasarkan Klasifikasi
             let fillColor = '#64748b'; 
             let strokeColor = '#475569';
             const cssClass = n.data.css_class || '';
+            const label = (n.data.label || '').toLowerCase();
 
-            if (cssClass.includes('success')) { fillColor = '#10b981'; strokeColor = '#059669'; } 
-            else if (cssClass.includes('danger')) { fillColor = '#ef4444'; strokeColor = '#dc2626'; } 
-            else if (cssClass.includes('dark')) { fillColor = '#1f2937'; strokeColor = '#000000'; } 
-            else if (cssClass.includes('info')) { fillColor = '#3b82f6'; strokeColor = '#2563eb'; } 
-            else if (cssClass.includes('warning')) { fillColor = '#f59e0b'; strokeColor = '#d97706'; } 
-            else if (n.y === 60) { fillColor = '#4f46e5'; strokeColor = '#4338ca'; } // Root
+            // Sesuaikan dengan legenda klasifikasi
+            if (cssClass.includes('success') || label.includes('segera')) { 
+                fillColor = '#10b981'; strokeColor = '#059669'; // Hijau - Restock Segera
+            } 
+            else if (cssClass.includes('info') || label.includes('terjadwal')) { 
+                fillColor = '#06b6d4'; strokeColor = '#0891b2'; // Cyan - Restock Terjadwal
+            } 
+            else if (cssClass.includes('secondary') || label.includes('optimal')) { 
+                fillColor = '#6b7280'; strokeColor = '#4b5563'; // Abu-abu - Stok Optimal
+            } 
+            else if (cssClass.includes('warning') || label.includes('evaluasi')) { 
+                fillColor = '#f59e0b'; strokeColor = '#d97706'; // Kuning - Perlu Evaluasi
+            } 
+            else if (cssClass.includes('dark') || label.includes('mati')) { 
+                fillColor = '#1f2937'; strokeColor = '#000000'; // Hitam - Stok Mati
+            } 
+            else if (n.y === 60) { 
+                fillColor = '#6366f1'; strokeColor = '#4f46e5'; // Ungu - Root Node
+            }
 
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             circle.setAttribute('cx', n.x);

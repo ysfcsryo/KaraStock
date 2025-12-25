@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -9,36 +10,51 @@ use App\Http\Controllers\ProductController;
 |--------------------------------------------------------------------------
 */
 
-// --- 1. HALAMAN UTAMA & UPLOAD ---
-// Menampilkan form upload
-Route::get('/', [ProductController::class, 'index'])->name('home');
+// --- AUTH ROUTES ---
+// Login page
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
-// Memproses file CSV yang diupload
-Route::post('/proses-csv', [ProductController::class, 'uploadCsv'])->name('upload.csv');
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Protected routes - harus login dulu
+Route::middleware('auth')->group(function () {
+    
+    // Profile
+    Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+    
+    // --- 1. HALAMAN UTAMA & UPLOAD ---
+    // Menampilkan form upload
+    Route::get('/', [ProductController::class, 'index'])->name('home');
+
+    // Memproses file CSV yang diupload
+    Route::post('/proses-csv', [ProductController::class, 'uploadCsv'])->name('upload.csv');
 
 
-// --- 2. HASIL ANALISA ---
-// Menampilkan tabel hasil prediksi dengan Filter File
-Route::get('/hasil-analisa', [ProductController::class, 'hasilAnalisa'])->name('hasil.analisa');
+    // --- 2. HASIL ANALISA ---
+    // Menampilkan tabel hasil prediksi dengan Filter File
+    Route::get('/hasil-analisa', [ProductController::class, 'hasilAnalisa'])->name('hasil.analisa');
 
-// Menampilkan Visualisasi Tree & Entropy (Detail per file)
-Route::get('/proses-file', [ProductController::class, 'prosesFile'])->name('proses.file');
-
-
-// --- 3. EVALUASI MODEL ---
-// Training data & Testing akurasi (Confusion Matrix)
-Route::get('/evaluasi', [ProductController::class, 'evaluasi'])->name('evaluasi');
+    // Menampilkan Visualisasi Tree & Entropy (Detail per file)
+    Route::get('/proses-file', [ProductController::class, 'prosesFile'])->name('proses.file');
 
 
-// --- 4. RIWAYAT (HISTORY) ---
-// Menampilkan halaman riwayat
-Route::get('/riwayat', [ProductController::class, 'riwayat'])->name('riwayat.index');
+    // --- 3. EVALUASI MODEL ---
+    // Training data & Testing akurasi (Confusion Matrix)
+    Route::get('/evaluasi', [ProductController::class, 'evaluasi'])->name('evaluasi');
 
-// Hapus satu file
-Route::delete('/riwayat/hapus-file', [ProductController::class, 'hapusByFile'])->name('riwayat.hapusByFile');
 
-// Hapus semua data
-Route::delete('/riwayat/hapus-semua', [ProductController::class, 'hapusSemua'])->name('riwayat.hapusSemua');
+    // --- 4. RIWAYAT (HISTORY) ---
+    // Menampilkan halaman riwayat
+    Route::get('/riwayat', [ProductController::class, 'riwayat'])->name('riwayat.index');
+
+    // Hapus satu file
+    Route::delete('/riwayat/hapus-file', [ProductController::class, 'hapusByFile'])->name('riwayat.hapusByFile');
+
+    // Hapus semua data
+    Route::delete('/riwayat/hapus-semua', [ProductController::class, 'hapusSemua'])->name('riwayat.hapusSemua');
+});
 
 // --- Opsional: Testing ---
 // Route::get('/debug/simulate-upload', [ProductController::class, 'simulateUploadTest']);

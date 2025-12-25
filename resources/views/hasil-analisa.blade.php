@@ -29,7 +29,7 @@
                 <div class="col-md-7 d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
                     
                     {{-- Form Pilih File (History) --}}
-                    <form action="{{ route('hasil.analisa') }}" method="GET" class="d-flex align-items-center gap-2 flex-grow-1 justify-content-md-end" style="min-width: 200px;">
+                    <form action="{{ route('hasil.analisa') }}" method="GET" class="d-flex align-items-center gap-2 flex-grow-1 justify-content-md-end form-filter">
                         
                         {{-- Tombol Reset (Muncul jika ada filter file di URL) --}}
                         @if(request('file'))
@@ -114,36 +114,44 @@
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body p-0">
                         <div class="row g-0 h-100">
-                            {{-- Gunakan col-6 agar di HP jadi 2 kolom (grid), bukan 1 panjang ke bawah --}}
-                            <div class="col-6 col-md-3 border-end border-bottom-0-md border-bottom-sm">
+                            {{-- Summary 5 klasifikasi baru --}}
+                            <div class="col-6 col-md border-end border-bottom border-bottom-0-md">
                                 <div class="p-3 text-center h-100 d-flex flex-column justify-content-center">
-                                    <h6 class="text-muted small fw-bold mb-1">PRIORITAS</h6>
+                                    <h6 class="text-muted small fw-bold mb-1">RESTOCK SEGERA</h6>
                                     <h3 class="text-success fw-bold mb-0">
-                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'prioritas'))->count() }}
+                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'segera'))->count() }}
                                     </h3>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3 border-end border-bottom-0-md border-bottom-sm">
+                            <div class="col-6 col-md border-end border-bottom border-bottom-0-md">
                                 <div class="p-3 text-center h-100 d-flex flex-column justify-content-center">
-                                    <h6 class="text-muted small fw-bold mb-1">RESTOCK</h6>
+                                    <h6 class="text-muted small fw-bold mb-1">RESTOCK TERJADWAL</h6>
                                     <h3 class="text-info fw-bold mb-0">
-                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'restock'))->count() }}
+                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'terjadwal'))->count() }}
                                     </h3>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3 border-end">
+                            <div class="col-6 col-md border-end">
                                 <div class="p-3 text-center h-100 d-flex flex-column justify-content-center">
-                                    <h6 class="text-muted small fw-bold mb-1">WARNING</h6>
+                                    <h6 class="text-muted small fw-bold mb-1">STOK OPTIMAL</h6>
+                                    <h3 class="text-secondary fw-bold mb-0">
+                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'optimal'))->count() }}
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md border-end">
+                                <div class="p-3 text-center h-100 d-flex flex-column justify-content-center">
+                                    <h6 class="text-muted small fw-bold mb-1">PERLU EVALUASI</h6>
                                     <h3 class="text-warning fw-bold mb-0">
-                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'warning'))->count() }}
+                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'evaluasi'))->count() }}
                                     </h3>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="col-6 col-md">
                                 <div class="p-3 text-center h-100 d-flex flex-column justify-content-center">
-                                    <h6 class="text-muted small fw-bold mb-1">DEAD STOCK</h6>
+                                    <h6 class="text-muted small fw-bold mb-1">STOK MATI</h6>
                                     <h3 class="text-dark fw-bold mb-0">
-                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'dead'))->count() }}
+                                        {{ $data->filter(fn($r) => str_contains(strtolower($r['status']), 'mati'))->count() }}
                                     </h3>
                                 </div>
                             </div>
@@ -173,7 +181,7 @@
                                 <th width="20%">Nama Produk</th>
                                 <th width="15%">Kategori</th>
                                 <th width="20%">Atribut (Harga / Jual / Endap)</th>
-                                <th width="15%" class="text-center">Status Prediksi</th>
+                                <th width="15%" class="text-center">Klasifikasi Stok</th>
                                 <th width="25%">Rekomendasi Tindakan</th>
                             </tr>
                         </thead>
@@ -189,14 +197,17 @@
                                     </td>
                                     <td>
                                         <div class="small lh-sm text-secondary">
-                                            <div class="d-flex justify-content-between mb-1">
-                                                <span><i class="bi bi-tag"></i></span> <span>{{ $row['kelas'] }}</span>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="bi bi-tag me-2"></i>
+                                                <span>{{ $row['kelas'] }}</span>
                                             </div>
-                                            <div class="d-flex justify-content-between mb-1">
-                                                <span><i class="bi bi-graph-up"></i></span> <span>{{ $row['performa'] }}</span>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="bi bi-graph-up me-2"></i>
+                                                <span>{{ $row['performa'] }}</span>
                                             </div>
-                                            <div class="d-flex justify-content-between">
-                                                <span><i class="bi bi-hourglass-split"></i></span> <span>{{ $row['durasi'] }}</span>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-hourglass-split me-2"></i>
+                                                <span>{{ $row['durasi'] }}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -226,5 +237,166 @@
         </div>
     @endif
 </div>
+
+{{-- Print Styles untuk PDF --}}
+<style>
+@media print {
+    /* Hide elements */
+    #sidebar-wrapper,
+    nav.navbar,
+    .btn,
+    button,
+    .card-header .btn,
+    .form-filter,
+    .vr,
+    footer {
+        display: none !important;
+    }
+
+    /* Full width content */
+    #page-content-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .container-fluid {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* Card adjustments */
+    .card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        margin-bottom: 1rem !important;
+    }
+
+    .card-header {
+        background-color: #f8f9fa !important;
+        border-bottom: 2px solid #dee2e6 !important;
+        padding: 0.75rem 1rem !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    /* Table optimization for print */
+    .table-responsive {
+        overflow: visible !important;
+    }
+
+    table {
+        width: 100% !important;
+        font-size: 9pt !important;
+        page-break-inside: auto;
+    }
+
+    thead {
+        display: table-header-group;
+        background-color: #f8f9fa !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    td, th {
+        padding: 0.4rem 0.5rem !important;
+        font-size: 9pt !important;
+        vertical-align: top !important;
+    }
+
+    /* Adjust column widths for better fit */
+    th:nth-child(1), td:nth-child(1) { width: 3% !important; } /* No */
+    th:nth-child(2), td:nth-child(2) { width: 17% !important; } /* Nama */
+    th:nth-child(3), td:nth-child(3) { width: 10% !important; } /* Kategori */
+    th:nth-child(4), td:nth-child(4) { width: 20% !important; } /* Atribut */
+    th:nth-child(5), td:nth-child(5) { width: 15% !important; } /* Status */
+    th:nth-child(6), td:nth-child(6) { width: 35% !important; } /* Rekomendasi */
+
+    /* Badge & text sizing */
+    .badge {
+        padding: 0.2rem 0.5rem !important;
+        font-size: 8pt !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .small, small {
+        font-size: 8pt !important;
+        line-height: 1.3 !important;
+    }
+
+    /* Summary cards */
+    .row.mb-4 .card-body {
+        padding: 0.5rem !important;
+    }
+
+    .display-5 {
+        font-size: 1.5rem !important;
+    }
+
+    /* Preserve colors */
+    .bg-primary, .text-primary,
+    .bg-success, .text-success,
+    .bg-info, .text-info,
+    .bg-warning, .text-warning,
+    .bg-danger, .text-danger,
+    .bg-secondary, .text-secondary,
+    .bg-dark, .text-dark {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Icon sizing */
+    .bi {
+        font-size: 8pt !important;
+    }
+
+    /* Page settings */
+    @page {
+        size: A4 landscape;
+        margin: 1cm;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Card footer */
+    .card-footer {
+        background-color: #f8f9fa !important;
+        border-top: 1px solid #dee2e6 !important;
+        padding: 0.5rem !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Text wrapping */
+    td {
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal !important;
+    }
+
+    /* Atribut column compact */
+    .lh-sm {
+        line-height: 1.2 !important;
+    }
+
+    .d-flex.align-items-center {
+        margin-bottom: 0.1rem !important;
+    }
+}
+</style>
 
 @endsection

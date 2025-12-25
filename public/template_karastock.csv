@@ -1,0 +1,27 @@
+Produk (Label),Kategori,Kelas Harga,Performa,Durasi Endap,Target Class
+Bahan Voal Polc Bahan,Bahan,Ekonomis,Laris,Baru,Restock Segera
+Bahan Voal Polc Bahan,Bahan,Ekonomis,Macet,Lama,Stok Mati
+Bahan Katun Mc Bahan,Bahan,Standar,Sedang,Normal,Restock Terjadwal
+Bahan Katun Pre Bahan,Bahan,Standar,Macet,Lama,Perlu Evaluasi
+Bahan Sutra Bar Bahan,Bahan,Premium,Macet,Normal,Stok Optimal
+Bahan Sutra Bar Bahan,Bahan,Premium,Laris,Baru,Restock Segera
+Bahan Sutra Tist Bahan,Bahan,Premium,Macet,Normal,Stok Optimal
+Bahan Satin Karc Bahan,Bahan,Standar,Laris,Baru,Restock Segera
+Bahan Tenun Ka Bahan,Bahan,Premium,Macet,Normal,Stok Optimal
+Bahan Kain Jagu Bahan,Bahan,Standar,Macet,Normal,Restock Terjadwal
+Kemeja Pria Marina,Kemeja,Standar,Laris,Baru,Restock Segera
+Kemeja Pria Marina,Kemeja,Standar,Sedang,Normal,Restock Terjadwal
+Kemeja Pria Marina,Kemeja,Standar,Macet,Lama,Stok Mati
+Kemeja Biru Dor Kemeja,Kemeja,Standar,Laris,Baru,Restock Segera
+Kemeja Biru Dor Kemeja,Kemeja,Standar,Sedang,Normal,Restock Terjadwal
+Kemeja Full Mot Kemeja,Kemeja,Premium,Macet,Normal,Stok Optimal
+Kemeja Putih Tu Kemeja,Kemeja,Standar,Laris,Normal,Restock Segera
+Kemeja Lengan I Kemeja,Kemeja,Standar,Macet,Lama,Stok Mati
+Kemeja Kombinasi Kemeja,Kemeja,Standar,Sedang,Normal,Restock Terjadwal
+Tuwik Wanita Pi Blus,Blus,Standar,Laris,Baru,Restock Segera
+Tuwik Wanita Kt Blus,Blus,Standar,Macet,Lama,Perlu Evaluasi
+Blus Karawo Kar Blus,Blus,Standar,Sedang,Normal,Restock Terjadwal
+Blus Lengan Terc Blus,Blus,Standar,Macet,Normal,Perlu Evaluasi
+Blus Motif Bunga Blus,Blus,Standar,Laris,Baru,Restock Segera
+Tuwik Model Ka Blus,Blus,Standar,Macet,Lama,Stok Optimal
+Blus Siffon Kara Blus,Blus,Standar,Macet,Lama,Stok Mati

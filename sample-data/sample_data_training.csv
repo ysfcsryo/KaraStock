@@ -1,0 +1,21 @@
+Nama,Kategori,Harga,Terjual,Lama Barang,Target Class
+Kemeja Batik Premium,Kemeja,280000,48,25,Prioritas Utama
+Blus Tenun Slow,Blus,220000,8,110,Dead Stock
+Celana Best Seller,Celana,195000,55,18,Prioritas Utama
+Bahan Kain Macet,Bahan,180000,5,135,Dead Stock
+Kemeja Standar,Kemeja,165000,28,45,Restock Normal
+Blus Fast Moving,Blus,145000,62,10,Prioritas Utama
+Celana Premium Slow,Celana,310000,12,88,Warning
+Bahan Import Macet,Bahan,420000,3,180,Dead Stock
+Kemeja Laris,Kemeja,195000,48,20,Prioritas Utama
+Blus Medium,Blus,175000,22,65,Pertahankan
+Celana Steady,Celana,185000,35,42,Restock Normal
+Bahan Hot Item,Bahan,95000,68,5,Prioritas Utama
+Kemeja Normal,Kemeja,225000,31,55,Pertahankan
+Blus Slow Moving,Blus,205000,9,102,Dead Stock
+Celana Trending,Celana,155000,51,12,Prioritas Utama
+Bahan Steady,Bahan,165000,25,48,Restock Normal
+Kemeja Warning,Kemeja,240000,15,82,Warning
+Blus Maintain,Blus,180000,32,38,Pertahankan
+Celana Low Stock,Celana,175000,18,70,Warning
+Bahan Premium Seller,Bahan,295000,42,28,Prioritas Utama
