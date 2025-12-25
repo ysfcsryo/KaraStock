@@ -86,6 +86,15 @@
         color: white;
         font-weight: 700;
         flex-shrink: 0;
+        overflow: hidden;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
     
     .stats-card {
@@ -150,14 +159,18 @@
                 <div class="card-body p-4 d-flex flex-column">
                     <div class="d-flex align-items-start mb-4">
                         <div class="user-avatar me-3">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                            @if($user->profile_photo)
+                                <img src="{{ asset($user->profile_photo) }}" alt="{{ $user->name }}">
+                            @else
+                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            @endif
                         </div>
                         <div class="flex-grow-1">
                             <h5 class="mb-2 fw-bold">{{ $user->name }}</h5>
                             <p class="text-muted small mb-2" style="line-height: 1.4;">
                                 <i class="bi bi-envelope me-1"></i>{{ $user->email }}
                             </p>
-                            <span class="role-badge role-{{ $user->role }}">
+                            <span class="role-badge role-{{ str_replace('_', '-', $user->role) }}">
                                 {{ ucfirst(str_replace('_', ' ', $user->role)) }}
                             </span>
                         </div>

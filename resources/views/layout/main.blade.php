@@ -68,37 +68,7 @@
                 </a>
                 @endif
 
-                <!-- Spacer untuk push ke bawah -->
-                <div style="flex: 1;"></div>
 
-                <!-- Divider -->
-                <div style="border-top: 2px solid #e2e8f0; margin: 0.5rem 0.75rem;"></div>
-
-                <!-- Profile Dropdown -->
-                <div class="dropdown dropup">
-                    <a class="list-group-item list-group-item-action dropdown-toggle {{ Request::is('profile') ? 'active' : '' }}" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle me-2"></i>
-                        <span class="menu-text">{{ Auth::user()->name }}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end w-100" aria-labelledby="profileDropdown" style="margin-bottom: 0.5rem;">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('profile') }}">
-                                <i class="bi bi-person-badge me-2 text-primary"></i>
-                                <span>Profil Saya</span>
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form action="{{ route('logout') }}" method="POST" id="logoutForm">
-                                @csrf
-                                <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
-                                    <i class="bi bi-box-arrow-right me-2"></i>
-                                    <span>Logout</span>
-                                </a>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
 
@@ -110,7 +80,7 @@
                 <div class="container-fluid">
                     <!-- Burger Menu Button (Works on all screen sizes) -->
                     <button class="navbar-toggler border-0 shadow-none me-2" id="sidebarToggle" type="button" title="Toggle Menu">
-                        <i class="bi bi-list fs-4"></i>
+                        <i class="bi bi-list fs-4 text-white"></i>
                     </button>
                     
                     <!-- Page Title/Breadcrumb - Show on all screen sizes -->
@@ -121,7 +91,66 @@
 
                     <!-- Right Side Actions -->
                     <div class="ms-auto d-flex align-items-center gap-2">
-                        <!-- Tombol bantuan dihapus -->
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown" style="position: relative;">
+                            <button class="nav-profile-trigger d-flex align-items-center gap-2 text-decoration-none border-0 bg-transparent" type="button" id="navProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                                <div class="nav-profile-info text-end d-none d-md-block">
+                                    <div class="nav-profile-name">{{ Auth::user()->name }}</div>
+                                    <div class="nav-profile-role">{{ Auth::user()->role === 'super_admin' ? 'Super Admin' : 'Admin' }}</div>
+                                </div>
+                                <div class="nav-profile-avatar">
+                                    @if(Auth::user()->profile_photo)
+                                        <img src="{{ asset(Auth::user()->profile_photo) }}" alt="{{ Auth::user()->name }}">
+                                    @else
+                                        <i class="bi bi-person-circle"></i>
+                                    @endif
+                                </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end profile-menu shadow-lg" aria-labelledby="navProfileDropdown" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 0.5rem;">
+                                <!-- Profile Header with Background -->
+                                <li class="dropdown-header p-0 border-0">
+                                    <div class="profile-menu-header">
+                                        <div class="d-flex align-items-center p-3">
+                                            <div class="profile-avatar-large me-3">
+                                                @if(Auth::user()->profile_photo)
+                                                    <img src="{{ asset(Auth::user()->profile_photo) }}" alt="{{ Auth::user()->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                @else
+                                                    <i class="bi bi-person-circle"></i>
+                                                @endif
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="profile-menu-name">{{ Auth::user()->name }}</div>
+                                                <div class="profile-menu-email">{{ Auth::user()->email }}</div>
+                                                <div class="profile-menu-badge mt-1">
+                                                    <span class="badge-role">{{ Auth::user()->role === 'super_admin' ? 'Super Admin' : 'Admin' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li class="px-2 py-1">
+                                    <a class="dropdown-item profile-menu-item" href="{{ route('profile') }}">
+                                        <div class="profile-menu-icon">
+                                            <i class="bi bi-person-badge"></i>
+                                        </div>
+                                        <span>Edit Profil</span>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li class="px-2 py-1">
+                                    <form action="{{ route('logout') }}" method="POST" id="logoutFormNav">
+                                        @csrf
+                                        <a class="dropdown-item profile-menu-item profile-menu-logout" href="#" onclick="event.preventDefault(); document.getElementById('logoutFormNav').submit();">
+                                            <div class="profile-menu-icon">
+                                                <i class="bi bi-box-arrow-right"></i>
+                                            </div>
+                                            <span>Logout</span>
+                                        </a>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -199,12 +228,35 @@
                 });
             }
             
-            // Close sidebar when clicking menu item on mobile
-            const menuItems = document.querySelectorAll('#sidebar-wrapper .list-group-item');
+            // Handle profile dropdown specifically
+            const profileDropdown = document.querySelector('#profileDropdown');
+            if (profileDropdown) {
+                profileDropdown.addEventListener('click', (e) => {
+                    // Jika sidebar tertutup (pada desktop), buka dulu sidebar dan cegah dropdown
+                    if (window.innerWidth > 768 && document.body.classList.contains('sb-sidenav-toggled')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleSidebar(); // Buka sidebar
+                        return false;
+                    }
+                });
+            }
+            
+            // Handle menu item clicks
+            const menuItems = document.querySelectorAll('#sidebar-wrapper .list-group-item:not(#profileDropdown)');
             menuItems.forEach(item => {
-                item.addEventListener('click', () => {
+                item.addEventListener('click', (e) => {
+                    // Jika sidebar tertutup (pada desktop), buka dulu sidebar
+                    if (window.innerWidth > 768 && document.body.classList.contains('sb-sidenav-toggled')) {
+                        e.preventDefault(); // Cegah navigasi
+                        toggleSidebar(); // Buka sidebar
+                        return false;
+                    }
+                    
+                    // Pada mobile, tutup sidebar setelah klik
                     if (window.innerWidth <= 768) {
-                        closeSidebar();
+                        // Biarkan navigasi terjadi, tapi tutup sidebar
+                        setTimeout(() => closeSidebar(), 100);
                     }
                 });
             });

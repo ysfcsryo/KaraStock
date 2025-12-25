@@ -15,8 +15,13 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 2rem;
         border-radius: 15px;
-        color: white;
         margin-bottom: 2rem;
+    }
+    
+    .form-header h2,
+    .form-header p {
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
     .form-label {

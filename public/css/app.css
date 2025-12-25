@@ -1450,6 +1450,9 @@ nav.navbar {
     box-shadow: var(--shadow-sm);
     border-bottom: 1px solid var(--gray-200);
     transition: all var(--transition-base);
+    z-index: 1020 !important;
+    position: relative !important;
+    overflow: visible !important;
 }
 
 nav.navbar:hover {
@@ -1520,6 +1523,8 @@ nav.navbar:hover {
     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     min-height: 100vh;
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    position: relative;
+    z-index: 1;
 }
 
 /* Desktop Toggle State */
@@ -1566,12 +1571,17 @@ nav.navbar:hover {
     body.sb-sidenav-toggled .list-group-item {
         justify-content: center;
         padding: 1rem 0;
-        margin: 0.25rem 0;
+        margin: 0.25rem 0.5rem;
+        text-align: center;
     }
 
     body.sb-sidenav-toggled .list-group-item i {
         margin: 0 !important;
         min-width: auto;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     /* Show toggle button on desktop */
@@ -1718,6 +1728,331 @@ nav.navbar:hover {
 /* ========================
    UTILITY CLASSES (untuk menggantikan inline styles)
    ======================== */
+
+/* Profile Dropdown Styling */
+.profile-dropdown .profile-avatar {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-100), var(--primary-50));
+    color: var(--primary-600);
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    transition: all var(--transition-base);
+}
+
+.profile-dropdown:hover .profile-avatar {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    color: white;
+    transform: scale(1.05);
+}
+
+.profile-dropdown.active .profile-avatar {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    color: white;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.profile-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-role {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    line-height: 1.2;
+    font-weight: 500;
+}
+
+.profile-dropdown.active .profile-name {
+    color: var(--primary-600);
+}
+
+.profile-dropdown.active .profile-role {
+    color: var(--primary-400);
+}
+
+/* Profile Avatar Large (for dropdown header) */
+.profile-avatar-large {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+    color: white;
+    font-size: 2.2rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+    border: 3px solid white;
+}
+
+/* Profile Menu Styling */
+.profile-menu {
+    min-width: 320px !important;
+    max-width: 350px !important;
+    border-radius: 16px !important;
+    border: none !important;
+    padding: 0 !important;
+    margin-top: 0.5rem !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    z-index: 99999 !important;
+    background: white !important;
+    position: absolute !important;
+}
+
+.profile-menu.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Navbar Profile Trigger */
+.nav-profile-trigger {
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 50px !important;
+    transition: all 0.3s ease;
+    background: white !important;
+    border: 2px solid var(--gray-200) !important;
+    cursor: pointer !important;
+    position: relative !important;
+    z-index: 1021 !important;
+}
+
+.nav-profile-trigger:hover {
+    background: var(--primary-50) !important;
+    border-color: var(--primary-300) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2) !important;
+}
+
+.nav-profile-trigger:focus,
+.nav-profile-trigger:active {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+}
+
+.nav-profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.nav-profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nav-profile-info {
+    line-height: 1.2;
+}
+
+.nav-profile-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.nav-profile-role {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+/* Ensure navbar dropdown is visible */
+nav.navbar {
+    z-index: 1020 !important;
+    position: relative;
+    overflow: visible !important;
+}
+
+nav.navbar .dropdown {
+    position: relative;
+    z-index: 1021 !important;
+}
+
+nav.navbar .dropdown-menu {
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+/* Remove overflow restrictions from sidebar */
+#sidebar-wrapper {
+    overflow-y: auto;
+}
+
+#sidebar-wrapper .list-group {
+    overflow: visible;
+}
+
+.profile-menu-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-menu-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.4;
+}
+
+.profile-menu-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1.3;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-menu-email {
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.2;
+}
+
+.badge-role {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.profile-menu .dropdown-header {
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+.profile-menu-item {
+    padding: 0.875rem 1rem !important;
+    border-radius: 10px !important;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    transition: all 0.2s ease;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin: 0;
+    background: white;
+    border: none;
+}
+
+.profile-menu-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--primary-50);
+    color: var(--primary-600);
+    font-size: 1.125rem;
+    transition: all 0.2s ease;
+}
+
+.profile-menu-item:hover {
+    background: var(--primary-50);
+    color: var(--primary-700) !important;
+    transform: translateX(4px);
+}
+
+.profile-menu-item:hover .profile-menu-icon {
+    background: var(--primary-500);
+    color: white;
+    transform: scale(1.1);
+}
+
+.profile-menu-logout .profile-menu-icon {
+    background: var(--danger-50);
+    color: var(--danger-600);
+}
+
+.profile-menu-logout:hover {
+    background: var(--danger-50) !important;
+    color: var(--danger-700) !important;
+}
+
+.profile-menu-logout:hover .profile-menu-icon {
+    background: var(--danger-500);
+    color: white;
+}
+
+.profile-menu .dropdown-divider {
+    margin: 0.5rem 1rem;
+    border-color: var(--gray-200);
+    opacity: 0.5;
+}
+
+/* Styling untuk sidebar minimized */
+body.sb-sidenav-toggled .profile-dropdown .profile-avatar {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+}
+
+body.sb-sidenav-toggled .profile-info {
+    display: none !important;
+}
+
+body.sb-sidenav-toggled .profile-dropdown .dropdown-toggle::after {
+    display: none !important;
+}
+
+/* Disable dropdown behavior saat minimized */
+@media (min-width: 769px) {
+    body.sb-sidenav-toggled .profile-dropdown .dropdown-menu {
+        display: none !important;
+    }
+    
+    body.sb-sidenav-toggled .profile-dropdown .dropdown-toggle {
+        pointer-events: auto !important;
+        cursor: pointer;
+    }
+    
+    /* Prevent bootstrap dropdown from opening */
+    body.sb-sidenav-toggled .profile-dropdown.show .dropdown-menu {
+        display: none !important;
+    }
+}
 
 /* Icon Colors */
 .icon-primary {

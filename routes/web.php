@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
     
     // Profile
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/delete-photo', [AuthController::class, 'deleteProfilePhoto'])->name('profile.deletePhoto');
     
     // --- 1. HALAMAN UTAMA & UPLOAD ---
     // Menampilkan form upload

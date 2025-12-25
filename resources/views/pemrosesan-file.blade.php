@@ -52,7 +52,7 @@
                             </div>
                         </div>
                         <div class="card-footer bg-light small text-muted">
-                            <i class="bi bi-info-circle"></i> <strong>Legenda Klasifikasi:</strong> 
+                            <i class="bi bi-info-circle"></i> <strong>Keterangan Klasifikasi:</strong> 
                             <span class="badge bg-success mx-1">Restock Segera</span>
                             <span class="badge bg-info mx-1">Restock Terjadwal</span>
                             <span class="badge bg-secondary mx-1">Stok Optimal</span>

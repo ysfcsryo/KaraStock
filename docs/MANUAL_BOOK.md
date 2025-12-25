@@ -42,11 +42,12 @@ Manado, Sulawesi Utara
 
 ## RIWAYAT REVISI
 
-| Versi | Tanggal     | Deskripsi Perubahan | Penulis          |
-| ----- | ----------- | ------------------- | ---------------- |
-| 0.1   | 20 Des 2025 | Draft awal          | Development Team |
-| 0.5   | 23 Des 2025 | Review internal     | QA Team          |
-| 1.0   | 26 Des 2025 | Rilis final         | Project Manager  |
+| Versi | Tanggal     | Deskripsi Perubahan                                      | Penulis          |
+| ----- | ----------- | -------------------------------------------------------- | ---------------- |
+| 0.1   | 20 Des 2025 | Draft awal                                               | Development Team |
+| 0.5   | 23 Des 2025 | Review internal                                          | QA Team          |
+| 1.0   | 26 Des 2025 | Rilis final                                              | Project Manager  |
+| 1.1   | 26 Des 2025 | Update fitur profile photo & UI improvements             | Development Team |
 
 ---
 
@@ -87,7 +88,212 @@ Dokumen ini didistribusikan kepada:
 12. [Riwayat & Tracking](#12-riwayat--tracking)
 13. [Profil Pengguna](#13-profil-pengguna)
 
-### BAGIAN IV: PANDUAN ADMINISTRATOR
+##---
+
+<div style="page-break-after: always;"></div>
+
+## 13. PROFIL PENGGUNA
+
+### 13.1 Mengakses Halaman Profil
+
+**Cara Akses:**
+
+**Method 1: Via Navbar**
+1. Klik **avatar/foto profil** di pojok kanan atas navbar
+2. Klik menu **"Edit Profil"**
+3. Anda akan diarahkan ke halaman profil
+
+**Method 2: Via URL**
+```
+http://your-domain.com/profile
+```
+
+### 13.2 Informasi Profil
+
+Halaman profil menampilkan:
+
+**Header Section:**
+- 🎨 Background gradient dengan pattern
+- 👤 Foto profil (jika sudah diupload) atau avatar default
+- 📧 Nama pengguna
+- 🏷️ Role/Jabatan (Super Admin atau Admin)
+
+**Info Cards:**
+- ✉️ Email address
+- 📅 Tanggal terdaftar
+- ⏰ Terakhir aktif
+
+**Statistics:**
+- ✅ Status akun (Aktif)
+- 📆 Waktu bergabung
+- 🕒 Last activity
+
+### 13.3 Upload & Edit Foto Profil
+
+**Cara Upload Foto Profil:**
+
+**Step 1:** Klik **icon kamera** (📷) pada avatar
+
+**Step 2:** Pilih foto dari komputer Anda
+- Format: JPG, PNG, GIF
+- Ukuran maksimal: 2MB
+- Rekomendasi: 500x500px untuk hasil terbaik
+
+**Step 3:** Preview foto akan muncul di modal popup
+- Lihat preview dalam format circular
+- Pastikan foto terlihat bagus
+
+**Step 4:** Klik **"Upload Sekarang"** untuk konfirmasi
+- Foto akan langsung disimpan
+- Loading indicator akan muncul
+- Notifikasi sukses akan tampil
+
+**Step 5:** Foto profil Anda ter-update di:
+- ✓ Navbar (pojok kanan atas)
+- ✓ Sidebar (jika masih ada)
+- ✓ Dropdown menu
+- ✓ Halaman profile
+
+**Hapus Foto Profil:**
+1. Scroll ke bawah di halaman profil
+2. Klik tombol **"Hapus Foto"**
+3. Konfirmasi di modal popup
+4. Foto akan dihapus, kembali ke avatar default
+
+⚠️ **PERHATIAN:**
+- Hanya foto dengan format JPG, PNG, atau GIF yang diterima
+- File lebih dari 2MB akan ditolak
+- Foto lama otomatis dihapus saat upload foto baru
+
+💡 **TIPS:**
+- Gunakan foto wajah untuk identifikasi mudah
+- Crop foto menjadi square (1:1 ratio) sebelum upload
+- Compress foto jika ukuran terlalu besar
+
+### 13.4 Edit Informasi Profil
+
+**Data yang Bisa Diubah:**
+
+**1. Nama Pengguna**
+- Klik pada field nama
+- Ketik nama baru
+- Klik **"Simpan Perubahan"**
+
+**2. Email Address**
+- Klik pada field email
+- Ketik email baru
+- Email harus unik (tidak dipakai user lain)
+- Klik **"Simpan Perubahan"**
+
+⚠️ **PERHATIAN:**
+- Email digunakan untuk login
+- Pastikan email valid dan aktif
+- Setelah ganti email, gunakan email baru untuk login berikutnya
+
+### 13.5 Ganti Password
+
+🔧 **TEKNIS:** Fitur ganti password saat ini harus melalui admin.
+
+**Prosedur Ganti Password:**
+1. Hubungi Super Admin
+2. Minta reset password
+3. Super Admin akan set password temporary
+4. Login dengan password baru
+5. (Optional) Minta admin set password permanent sesuai keinginan
+
+**Best Practice Password:**
+```
+✅ Minimal 8 karakter
+✅ Kombinasi huruf besar & kecil
+✅ Mengandung angka
+✅ Mengandung simbol (@, #, !, dll)
+❌ Jangan gunakan: 123456, password, nama sendiri
+```
+
+### 13.6 Validasi & Error Messages
+
+**Upload Foto:**
+
+| Error Message                              | Penyebab                    | Solusi                                |
+| ------------------------------------------ | --------------------------- | ------------------------------------- |
+| "Ukuran file terlalu besar! Maksimal 2MB"  | File > 2MB                  | Compress foto atau pilih foto lain    |
+| "File harus berupa gambar!"                | Bukan format image          | Upload JPG, PNG, atau GIF             |
+| "Foto profile berhasil diupload!"          | Sukses                      | -                                     |
+
+**Edit Data:**
+
+| Error Message                              | Penyebab                    | Solusi                                |
+| ------------------------------------------ | --------------------------- | ------------------------------------- |
+| "The email has already been taken"         | Email sudah dipakai user lain| Gunakan email lain                   |
+| "The name field is required"               | Nama kosong                 | Isi field nama                        |
+| "Profile berhasil diupdate!"               | Sukses                      | -                                     |
+
+### 13.7 Keamanan Profil
+
+**Proteksi Data:**
+- ✅ Hanya pemilik akun yang bisa edit profil sendiri
+- ✅ Foto profil disimpan dengan nama unik (tidak bisa ditebak)
+- ✅ Email ter-validasi format dan uniqueness
+- ✅ Password ter-enkripsi (tidak bisa dilihat siapapun)
+
+**Privacy:**
+- Foto profil visible untuk user lain di sistem
+- Email hanya visible untuk user sendiri dan super admin
+- Activity timestamp visible untuk semua user
+
+### 13.8 Fitur Premium UI
+
+**Design Modern:**
+- 🎨 Gradient background dengan animasi float
+- 💫 Avatar circular dengan border gradient
+- 🎭 Modal popup untuk konfirmasi upload
+- ✨ Smooth transitions dan hover effects
+- 🎯 Responsive design (mobile & desktop)
+
+**User Experience:**
+- 📸 Live preview sebelum upload
+- 🔄 Auto-refresh avatar setelah upload
+- 💾 Auto-save saat edit data
+- 🎪 Loading indicators untuk feedback
+- ✅ Success notifications
+
+**Modal Upload Preview:**
+- Preview foto dalam format circular 200x200px
+- Background gradient dengan border
+- Tombol "Batal" dan "Upload Sekarang"
+- Animasi slide-up dan zoom-in
+
+**Modal Hapus Foto:**
+- Icon trash besar untuk visual cue
+- Pesan konfirmasi yang jelas
+- Tombol "Batal" dan "Hapus Foto"
+- Color coding merah untuk warning
+
+### 13.9 Troubleshooting Profil
+
+**Foto Tidak Muncul:**
+- Cek ukuran file (max 2MB)
+- Cek format file (JPG/PNG/GIF)
+- Cek koneksi internet
+- Hard refresh browser (Ctrl + F5)
+
+**Gagal Update Data:**
+- Cek koneksi internet
+- Pastikan semua field terisi
+- Cek apakah email sudah dipakai user lain
+- Logout dan login kembali
+
+**Modal Tidak Muncul:**
+- Clear browser cache
+- Hard refresh (Ctrl + F5)
+- Coba browser lain
+- Disable browser extensions yang mungkin block popup
+
+---
+
+<div style="page-break-after: always;"></div>
+
+# BAGIAN IV: PANDUAN ADMINISTRATOR
 
 14. [Manajemen User](#14-manajemen-user)
 15. [Hak Akses & Role](#15-hak-akses--role)

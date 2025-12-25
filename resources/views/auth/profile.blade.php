@@ -49,6 +49,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
     }
     
     .profile-avatar-inner i {
@@ -57,6 +58,93 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+    }
+    
+    .profile-avatar-inner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .photo-upload-btn {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        border: 4px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .photo-upload-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    
+    .photo-upload-btn i {
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    #profilePhotoInput {
+        display: none;
+    }
+    
+    .profile-name-input {
+        outline: none;
+        box-shadow: none !important;
+    }
+    
+    .profile-name-input:focus {
+        border-bottom: 2px solid #667eea !important;
+    }
+    
+    .profile-info-item input.form-control {
+        outline: none;
+        padding: 0.5rem 0;
+    }
+    
+    .profile-info-item input.form-control:focus {
+        border-bottom: 2px solid #667eea;
+        box-shadow: none;
+    }
+    
+    /* Modal Styling */
+    .modal-content {
+        animation: modalSlideUp 0.3s ease-out;
+    }
+    
+    @keyframes modalSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .preview-container {
+        animation: zoomIn 0.4s ease-out;
+    }
+    
+    @keyframes zoomIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
     
     .profile-card-modern {
@@ -229,15 +317,54 @@
                 </div>
                 
                 <div class="card-body p-4 p-md-5">
-                    <!-- Avatar -->
-                    <div class="profile-avatar-wrapper">
-                        <div class="profile-avatar-inner">
-                            <i class="bi bi-person-fill"></i>
+                    <!-- Avatar with Upload Button -->
+                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
+                        @csrf
+                        <div class="profile-avatar-wrapper">
+                            <div class="profile-avatar-inner">
+                                @if(Auth::user()->profile_photo)
+                                    <img src="{{ asset(Auth::user()->profile_photo) }}" alt="Profile Photo" id="profilePreview">
+                                @else
+                                    <i class="bi bi-person-fill" id="defaultAvatar"></i>
+                                @endif
+                            </div>
+                            <label for="profilePhotoInput" class="photo-upload-btn" title="Ubah Foto Profile">
+                                <i class="bi bi-camera-fill"></i>
+                            </label>
+                            <input type="file" id="profilePhotoInput" name="profile_photo" accept="image/*">
+                        </div>
+                    
+                    <!-- Name (Editable) -->
+                    <div class="mt-4 text-center">
+                        <input type="text" name="name" class="form-control text-center fw-bold fs-4 border-0 bg-transparent profile-name-input" 
+                               value="{{ Auth::user()->name }}" required 
+                               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    </div>
+                    
+                    <!-- Email (Editable) -->
+                    <div class="mt-3 px-4">
+                        <div class="profile-info-item email">
+                            <div class="profile-info-label">
+                                <i class="bi bi-envelope-fill"></i>
+                                Alamat Email
+                            </div>
+                            <input type="email" name="email" class="form-control border-0 bg-transparent fw-semibold" 
+                                   value="{{ Auth::user()->email }}" required>
                         </div>
                     </div>
                     
-                    <!-- Name -->
-                    <h2 class="profile-name-badge mt-4">{{ Auth::user()->name }}</h2>
+                    <!-- Save Button -->
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-modern btn-primary">
+                            <i class="bi bi-check2-circle me-2"></i>Simpan Perubahan
+                        </button>
+                        @if(Auth::user()->profile_photo)
+                        <button type="button" class="btn btn-modern btn-secondary" onclick="deletePhoto()">
+                            <i class="bi bi-trash me-2"></i>Hapus Foto
+                        </button>
+                        @endif
+                    </div>
+                    </form>
                     
                     <!-- Stats Cards -->
                     <div class="profile-stats">
@@ -259,15 +386,7 @@
                     </div>
                     
                     <!-- Info Cards -->
-                    <div class="mt-4">
-                        <div class="profile-info-item email">
-                            <div class="profile-info-label">
-                                <i class="bi bi-envelope-fill"></i>
-                                Alamat Email
-                            </div>
-                            <p class="profile-info-value">{{ Auth::user()->email }}</p>
-                        </div>
-                        
+                    <div class="mt-4 px-4">
                         <div class="profile-info-item date">
                             <div class="profile-info-label">
                                 <i class="bi bi-calendar-check-fill"></i>
@@ -302,4 +421,177 @@
         </div>
     </div>
 </div>
+
+<!-- Form untuk hapus foto -->
+<form id="deletePhotoForm" action="{{ route('profile.deletePhoto') }}" method="POST" style="display: none;">
+    @csrf
+</form>
+
+<!-- Modal Preview Upload -->
+<div class="modal fade" id="uploadPreviewModal" tabindex="-1" aria-labelledby="uploadPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <h5 class="modal-title text-white fw-bold" id="uploadPreviewModalLabel">
+                    <i class="bi bi-camera-fill me-2"></i>Preview Foto Profile
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="preview-container mb-4" style="width: 200px; height: 200px; margin: 0 auto; border-radius: 50%; overflow: hidden; border: 5px solid #667eea; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+                    <img id="modalPreviewImage" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <p class="text-muted mb-0">Upload foto profile ini?</p>
+                <small class="text-muted">Foto akan langsung disimpan</small>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-modern btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Batal
+                </button>
+                <button type="button" class="btn btn-modern btn-primary" onclick="confirmUpload()">
+                    <i class="bi bi-check2-circle me-2"></i>Upload Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="deletePhotoModal" tabindex="-1" aria-labelledby="deletePhotoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <h5 class="modal-title text-white fw-bold" id="deletePhotoModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Konfirmasi Hapus
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="mb-3">
+                    <i class="bi bi-trash" style="font-size: 4rem; color: #f5576c;"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Hapus Foto Profile?</h5>
+                <p class="text-muted mb-0">Foto profile Anda akan dihapus dan kembali ke avatar default.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-modern btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Batal
+                </button>
+                <button type="button" class="btn btn-modern btn-danger" onclick="confirmDelete()">
+                    <i class="bi bi-trash me-2"></i>Hapus Foto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let selectedFile = null;
+        let uploadModal = null;
+        let deleteModal = null;
+        
+        // Initialize modals after DOM is ready
+        setTimeout(() => {
+            uploadModal = new bootstrap.Modal(document.getElementById('uploadPreviewModal'));
+            deleteModal = new bootstrap.Modal(document.getElementById('deletePhotoModal'));
+        }, 100);
+
+        // Preview foto sebelum upload
+        document.getElementById('profilePhotoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validasi ukuran file (max 2MB)
+                if (file.size > 2048000) {
+                    alert('Ukuran file terlalu besar! Maksimal 2MB');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validasi tipe file
+                if (!file.type.match('image.*')) {
+                    alert('File harus berupa gambar!');
+                    this.value = '';
+                    return;
+                }
+                
+                selectedFile = file;
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Update preview in modal
+                    document.getElementById('modalPreviewImage').src = e.target.result;
+                    
+                    // Update main avatar preview
+                    const avatarInner = document.querySelector('.profile-avatar-inner');
+                    const defaultAvatar = document.getElementById('defaultAvatar');
+                    
+                    if (defaultAvatar) {
+                        defaultAvatar.remove();
+                    }
+                    
+                    let img = document.getElementById('profilePreview');
+                    if (!img) {
+                        img = document.createElement('img');
+                        img.id = 'profilePreview';
+                        img.alt = 'Profile Photo';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        avatarInner.appendChild(img);
+                    }
+                    img.src = e.target.result;
+                    
+                    // Show modal dengan delay untuk memastikan sudah terinisialisasi
+                    setTimeout(() => {
+                        if (uploadModal) {
+                            uploadModal.show();
+                        } else {
+                            // Fallback jika modal belum terinisialisasi
+                            uploadModal = new bootstrap.Modal(document.getElementById('uploadPreviewModal'));
+                            uploadModal.show();
+                        }
+                    }, 150);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Konfirmasi upload - make it global
+        window.confirmUpload = function() {
+            if (uploadModal) {
+                uploadModal.hide();
+            }
+            
+            // Show loading
+            const submitBtn = document.querySelector('button[type="submit"].btn-modern.btn-primary');
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengupload...';
+            }
+            
+            // Submit form
+            document.getElementById('profileForm').submit();
+        };
+        
+        // Fungsi hapus foto dengan modal - make it global
+        window.deletePhoto = function() {
+            if (deleteModal) {
+                deleteModal.show();
+            } else {
+                deleteModal = new bootstrap.Modal(document.getElementById('deletePhotoModal'));
+                deleteModal.show();
+            }
+        };
+        
+        window.confirmDelete = function() {
+            if (deleteModal) {
+                deleteModal.hide();
+            }
+            document.getElementById('deletePhotoForm').submit();
+        };
+    });
+</script>
 @endsection
