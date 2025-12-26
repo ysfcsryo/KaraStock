@@ -34,6 +34,8 @@ Sistem ini membantu pemilik dan staff toko untuk:
 | 📜 **Riwayat Lengkap**   | Tracking siapa upload apa dan kapan             |
 | 🎨 **Responsive Design** | Bisa diakses dari desktop & mobile              |
 | 🔐 **Secure Auth**       | Login aman dengan hashed password               |
+| 📸 **Profile Photo**     | Upload & manage foto profil dengan custom modal |
+| 🎯 **Clean Code**        | Semua styles terpusat di app.css (no inline)    |
 
 ---
 
@@ -301,6 +303,15 @@ Dikembangkan dengan ❤️ untuk membantu UMKM Lapak Karawo mengoptimalkan manaj
 ---
 
 ## 📈 Changelog
+
+### Version 1.1 (26 Des 2025)
+
+-   ✅ **Profile photo upload** dengan custom modal (no Bootstrap modal)
+-   ✅ **Clean architecture** - semua inline styles dipindahkan ke app.css
+-   ✅ **Template CSV** dengan 8 data contoh
+-   ✅ **Deployment ready** dengan security & performance optimization
+-   ✅ **HTTPS force** di production environment
+-   ✅ Complete deployment checklist & guides
 
 ### Version 1.0.0 (25 Des 2025)
 

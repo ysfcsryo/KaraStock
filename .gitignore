@@ -17,3 +17,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Ignore uploaded files but keep folder structure
+/public/uploads/profiles/*
+!/public/uploads/profiles/.gitkeep
+/storage/app/uploads/*
+!/storage/app/uploads/.gitkeep

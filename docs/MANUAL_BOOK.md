@@ -87,6 +87,7 @@ Dokumen ini didistribusikan kepada:
 11. [Visualisasi Hasil](#11-visualisasi-hasil)
 12. [Riwayat & Tracking](#12-riwayat--tracking)
 13. [Profil Pengguna](#13-profil-pengguna)
+14. [Deployment & Hosting](#14-deployment--hosting)
 
 ##---
 
@@ -319,20 +320,473 @@ Halaman profil menampilkan:
 
 <div style="page-break-after: always;"></div>
 
+## 14. DEPLOYMENT & HOSTING
+
+### 14.1 Persiapan Sebelum Hosting
+
+**Checklist Pre-Deployment:**
+
+✅ **File & Folder:**
+
+-   Semua file blade sudah bebas inline styles
+-   CSS terpusat di `public/css/app.css`
+-   Template CSV sudah berisi data contoh
+-   Folder `public/uploads/profiles/` sudah ada
+-   Folder `storage/` memiliki permission yang benar
+
+✅ **Konfigurasi:**
+
+-   File `.env` sudah diatur untuk production
+-   `APP_DEBUG=false` untuk keamanan
+-   `APP_URL` sesuai domain hosting
+-   Database credentials sudah benar
+-   `APP_KEY` sudah di-generate
+
+✅ **Database:**
+
+-   Migration sudah dijalankan
+-   Seeder sudah dijalankan (minimal user super admin)
+-   Backup database development tersimpan
+
+✅ **Testing:**
+
+-   Login berhasil
+-   Upload file CSV berfungsi
+-   Analisa data berfungsi
+-   Upload foto profil berfungsi
+-   Semua halaman responsive
+
+### 14.2 Konfigurasi Environment Production
+
+**Edit file `.env` untuk production:**
+
+```env
+# Application
+APP_NAME=KaraStock
+APP_ENV=production
+APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+APP_DEBUG=false
+APP_URL=https://yourdomain.com
+
+# Database (sesuaikan dengan hosting)
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=karastock_db
+DB_USERNAME=karastock_user
+DB_PASSWORD=your_secure_password
+
+# Session (untuk keamanan)
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+SESSION_SECURE_COOKIE=true
+
+# Cache (optional, untuk performa)
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+```
+
+⚠️ **PENTING:**
+
+-   Jangan commit file `.env` ke Git
+-   Gunakan `.env.example` sebagai template
+-   Simpan `.env` production dengan aman
+
+### 14.3 Langkah-Langkah Deployment
+
+**Method 1: Manual Upload (cPanel/FTP)**
+
+**Step 1: Persiapan File**
+
+```bash
+# Di local development
+composer install --optimize-autoloader --no-dev
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+**Step 2: Upload File ke Server**
+
+-   Upload semua file kecuali `node_modules/` dan `.git/`
+-   Pastikan struktur folder tetap sama
+-   Upload ke folder `public_html/` atau sesuai konfigurasi hosting
+
+**Step 3: Set Permission**
+
+```bash
+# Set permission untuk storage dan bootstrap/cache
+chmod -R 775 storage
+chmod -R 775 bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+```
+
+**Step 4: Setup Database**
+
+-   Buat database baru di cPanel MySQL
+-   Buat user database dengan password kuat
+-   Import database jika ada
+-   Atau jalankan migration:
+
+```bash
+php artisan migrate --force
+php artisan db:seed --force
+```
+
+**Step 5: Konfigurasi Web Server**
+
+-   Document root harus mengarah ke folder `public/`
+-   Buat file `.htaccess` jika belum ada
+-   Enable `mod_rewrite` Apache
+
+**Method 2: Git Deployment (Shared Hosting dengan SSH)**
+
+```bash
+# Clone repository
+git clone https://github.com/yourrepo/karastock.git
+
+# Masuk ke folder
+cd karastock
+
+# Install dependencies
+composer install --optimize-autoloader --no-dev
+npm install && npm run build
+
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# Setup database
+php artisan migrate --force
+php artisan db:seed --force
+
+# Setup permission
+chmod -R 775 storage bootstrap/cache
+```
+
+**Method 3: VPS/Dedicated Server (with Nginx)**
+
+```nginx
+# /etc/nginx/sites-available/karastock
+server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+    root /var/www/karastock/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+### 14.4 SSL Certificate (HTTPS)
+
+**Mengapa Perlu SSL:**
+
+-   ✅ Keamanan data (enkripsi)
+-   ✅ Trust dari pengguna
+-   ✅ SEO boost dari Google
+-   ✅ Required untuk fitur modern browser
+
+**Install SSL dengan Let's Encrypt (FREE):**
+
+```bash
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx
+
+# Generate certificate
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+# Auto-renewal (cron job)
+sudo certbot renew --dry-run
+```
+
+**Konfigurasi Laravel untuk HTTPS:**
+
+```env
+# .env
+APP_URL=https://yourdomain.com
+SESSION_SECURE_COOKIE=true
+```
+
+```php
+// app/Providers/AppServiceProvider.php
+public function boot()
+{
+    if ($this->app->environment('production')) {
+        \URL::forceScheme('https');
+    }
+}
+```
+
+### 14.5 Optimasi Performance
+
+**1. Enable OPcache (PHP)**
+
+```ini
+; php.ini
+opcache.enable=1
+opcache.memory_consumption=256
+opcache.interned_strings_buffer=16
+opcache.max_accelerated_files=10000
+opcache.revalidate_freq=60
+```
+
+**2. Laravel Caching**
+
+```bash
+# Cache configuration
+php artisan config:cache
+
+# Cache routes
+php artisan route:cache
+
+# Cache views
+php artisan view:cache
+
+# Clear all cache (jika ada update)
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+**3. Asset Optimization**
+
+```bash
+# Minify CSS/JS
+npm run build
+
+# Enable Gzip compression di .htaccess
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
+</IfModule>
+```
+
+**4. Database Optimization**
+
+```bash
+# Enable query cache
+# Gunakan indexes pada kolom yang sering di-query
+# Optimize tables berkala
+OPTIMIZE TABLE users, histories;
+```
+
+### 14.6 Security Checklist
+
+**✅ Keamanan Production:**
+
+```env
+# .env - WAJIB
+APP_DEBUG=false
+APP_ENV=production
+SESSION_SECURE_COOKIE=true
+```
+
+**🔒 File Permissions:**
+
+```bash
+# Jangan 777!
+chmod 755 /path/to/project
+chmod -R 775 storage bootstrap/cache
+chmod 644 .env
+```
+
+**🛡️ Web Server Security:**
+
+```apache
+# .htaccess - Protect sensitive files
+<FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "composer\.(json|lock)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+```
+
+**🔐 Database Security:**
+
+-   Password kuat (min 16 karakter random)
+-   Remote access disabled jika tidak perlu
+-   Regular backup otomatis
+-   User database hanya punya privilege yang diperlukan
+
+### 14.7 Monitoring & Maintenance
+
+**Logs Monitoring:**
+
+```bash
+# Laravel logs
+tail -f storage/logs/laravel.log
+
+# Web server logs
+tail -f /var/log/nginx/error.log
+tail -f /var/log/apache2/error.log
+```
+
+**Backup Strategy:**
+
+```bash
+# Backup database daily
+0 2 * * * mysqldump -u user -p password karastock_db > /backups/karastock_$(date +\%Y\%m\%d).sql
+
+# Backup files weekly
+0 3 * * 0 tar -czf /backups/karastock_files_$(date +\%Y\%m\%d).tar.gz /var/www/karastock
+```
+
+**Update Regular:**
+
+```bash
+# Update Laravel dependencies (security patches)
+composer update --no-dev
+
+# Clear cache after update
+php artisan cache:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+### 14.8 Troubleshooting Deployment
+
+**500 Internal Server Error:**
+
+-   Cek `storage/logs/laravel.log`
+-   Pastikan permission folder benar (775)
+-   Cek `.env` sudah ada dan benar
+-   Pastikan `APP_KEY` sudah di-generate
+
+**404 Not Found (All Routes):**
+
+-   Pastikan document root ke `public/`
+-   Enable `mod_rewrite` (Apache)
+-   Cek file `.htaccess` ada di `public/`
+
+**Database Connection Error:**
+
+-   Cek credentials di `.env`
+-   Cek database sudah dibuat
+-   Cek user database punya akses
+-   Test koneksi: `php artisan migrate:status`
+
+**CSS/JS Not Loading:**
+
+-   Jalankan `npm run build`
+-   Cek `APP_URL` di `.env`
+-   Clear browser cache
+-   Cek permission folder `public/`
+
+**File Upload Failed:**
+
+-   Cek permission folder `storage/` dan `public/uploads/`
+-   Cek `upload_max_filesize` dan `post_max_size` di php.ini
+-   Cek disk space server
+
+### 14.9 Post-Deployment Checklist
+
+**✅ Verifikasi Setelah Deploy:**
+
+1. **Access & Login**
+
+    - [ ] Domain bisa diakses
+    - [ ] Login berhasil
+    - [ ] Session management berfungsi
+
+2. **Core Functions**
+
+    - [ ] Upload CSV berfungsi
+    - [ ] Analisa data berfungsi
+    - [ ] Download template berfungsi
+    - [ ] Visualisasi hasil OK
+
+3. **User Features**
+
+    - [ ] Upload foto profil berfungsi
+    - [ ] Edit profil berfungsi
+    - [ ] Logout berfungsi
+    - [ ] History tracking berfungsi
+
+4. **Admin Features** (jika ada)
+
+    - [ ] Kelola user berfungsi
+    - [ ] View all history berfungsi
+    - [ ] Export data berfungsi
+
+5. **Performance & Security**
+
+    - [ ] Page load < 3 detik
+    - [ ] HTTPS aktif (SSL valid)
+    - [ ] APP_DEBUG=false
+    - [ ] Error pages custom (404, 500)
+
+6. **Responsive Design**
+    - [ ] Desktop view OK
+    - [ ] Tablet view OK
+    - [ ] Mobile view OK
+
+**🎉 Jika semua checklist OK, sistem siap production!**
+
+### 14.10 Contact & Support
+
+**Untuk Bantuan Deployment:**
+
+📧 **Email:** support@karastock.com  
+💬 **WhatsApp:** +62 XXX-XXXX-XXXX  
+🌐 **Website:** https://karastock.com  
+📚 **Documentation:** https://docs.karastock.com
+
+**Include saat request support:**
+
+-   Laravel version: `php artisan --version`
+-   PHP version: `php -v`
+-   Server OS & Web server
+-   Error logs dari `storage/logs/laravel.log`
+-   Screenshot error (jika ada)
+
+---
+
+<div style="page-break-after: always;"></div>
+
 # BAGIAN IV: PANDUAN ADMINISTRATOR
 
-14. [Manajemen User](#14-manajemen-user)
-15. [Hak Akses & Role](#15-hak-akses--role)
-16. [Monitoring Aktivitas](#16-monitoring-aktivitas)
-17. [Backup & Maintenance](#17-backup--maintenance)
+15. [Manajemen User](#15-manajemen-user)
+16. [Hak Akses & Role](#16-hak-akses--role)
+17. [Monitoring Aktivitas](#17-monitoring-aktivitas)
+18. [Backup & Maintenance](#18-backup--maintenance)
 
 ### BAGIAN V: TEKNIS & REFERENSI
 
-18. [Cara Kerja Algoritma](#18-cara-kerja-algoritma)
-19. [Format Data & Validasi](#19-format-data--validasi)
-20. [Troubleshooting](#20-troubleshooting)
-21. [FAQ - Pertanyaan Umum](#21-faq---pertanyaan-umum)
-22. [Glossary - Istilah](#22-glossary---istilah)
+19. [Cara Kerja Algoritma](#19-cara-kerja-algoritma)
+20. [Format Data & Validasi](#20-format-data--validasi)
+21. [Troubleshooting](#21-troubleshooting)
+22. [FAQ - Pertanyaan Umum](#22-faq---pertanyaan-umum)
+23. [Glossary - Istilah](#23-glossary---istilah)
 
 ### LAMPIRAN
 

@@ -37,7 +37,7 @@
 
             <div class="sidebar-header">
                 <div class="brand-container">
-                    <img src="{{ asset('assets/images/logoKaraStock.png') }}" alt="KaraStock Logo" class="me-2 logo-sidebar">
+                    <img src="{{ asset('assets/images/logoKaraStock.png') }}" alt="KaraStock Logo" class="me-3 logo-sidebar">
                     <div class="d-flex flex-column">
                         <span class="brand-text fw-bold fs-5">KaraStock</span>
                         <span class="small text-white-50 brand-subtitle">Decision Tree Stock Advisor</span>

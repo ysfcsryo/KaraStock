@@ -198,9 +198,7 @@
                         <button type="button" class="btn btn-sm btn-danger flex-grow-1 delete-user-btn" 
                                 data-user-id="{{ $user->id }}"
                                 data-user-name="{{ $user->name }}"
-                                data-user-email="{{ $user->email }}"
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteUserModal">
+                                data-user-email="{{ $user->email }}">
                             <i class="bi bi-trash me-1"></i>Hapus
                         </button>
                         @endif
@@ -219,46 +217,51 @@
     @endif
 </div>
 
-<!-- Modal Konfirmasi Hapus User -->
-<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-danger text-white border-0">
-                <h5 class="modal-title" id="deleteUserModalLabel">
+<!-- Modal Konfirmasi Hapus User - Custom Modal -->
+<div id="deleteUserModal" class="custom-modal hidden">
+    <div class="custom-modal-overlay" onclick="closeDeleteUserModal()"></div>
+    <div class="custom-modal-content">
+        <div class="modal-content border-0 shadow-lg modal-rounded">
+            <div class="modal-header bg-gradient text-white border-0" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
+                <h5 class="modal-title fw-bold">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>Konfirmasi Hapus User
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" onclick="closeDeleteUserModal()" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4">
-                <div class="text-center mb-3">
-                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center delete-icon-container">
-                        <i class="bi bi-person-x-fill text-danger delete-icon-lg"></i>
+            <div class="modal-body text-center py-5 px-4">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10" style="width: 80px; height: 80px;">
+                        <i class="bi bi-person-x-fill text-danger" style="font-size: 2.5rem;"></i>
                     </div>
                 </div>
-                <h5 class="text-center mb-3">Apakah Anda yakin ingin menghapus user ini?</h5>
-                <div class="alert alert-light border">
-                    <div class="mb-2">
-                        <strong><i class="bi bi-person me-2"></i>Nama:</strong>
-                        <span id="modal-user-name" class="ms-2">-</span>
+                <h4 class="fw-bold mb-3 text-dark">Hapus User Ini?</h4>
+                <p class="text-muted mb-3 fs-6">Yakin ingin menghapus user berikut dari sistem?</p>
+                <div class="alert alert-light border mb-3">
+                    <div class="text-start mb-2">
+                        <i class="bi bi-person-fill text-primary me-2"></i>
+                        <strong>Nama:</strong>
+                        <span id="modal-user-name" class="ms-2 text-dark">-</span>
                     </div>
-                    <div>
-                        <strong><i class="bi bi-envelope me-2"></i>Email:</strong>
-                        <span id="modal-user-email" class="ms-2">-</span>
+                    <div class="text-start">
+                        <i class="bi bi-envelope-fill text-primary me-2"></i>
+                        <strong>Email:</strong>
+                        <span id="modal-user-email" class="ms-2 text-dark">-</span>
                     </div>
                 </div>
-                <p class="text-muted small mb-0">
-                    <i class="bi bi-info-circle me-1"></i>Data user akan dihapus permanen dan tidak dapat dikembalikan.
-                </p>
+                <div class="alert alert-danger border-0 bg-danger bg-opacity-10 mb-0">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <small class="text-danger fw-semibold">Data user akan dihapus permanen dan tidak dapat dikembalikan!</small>
+                </div>
             </div>
-            <div class="modal-footer border-0 bg-light">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i>Batal
+            <div class="modal-footer border-0 justify-content-center pb-4 gap-2">
+                <button type="button" class="btn btn-lg btn-light px-5 shadow-sm" onclick="closeDeleteUserModal()">
+                    <i class="bi bi-x-circle me-2"></i>Batal
                 </button>
-                <form id="delete-user-form" method="POST" action="" class="form-inline">
+                <form id="delete-user-form" method="POST" action="" class="d-inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash me-1"></i>Ya, Hapus User
+                    <button type="submit" class="btn btn-lg btn-danger px-5 shadow-sm">
+                        <i class="bi bi-trash-fill me-2"></i>Ya, Hapus User
                     </button>
                 </form>
             </div>
@@ -267,15 +270,30 @@
 </div>
 
 <script>
+// Custom Modal Functions
+function showDeleteUserModal() {
+    const modal = document.getElementById('deleteUserModal');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteUserModal() {
+    const modal = document.getElementById('deleteUserModal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
 // Handle modal data population
 document.addEventListener('DOMContentLoaded', function() {
-    const deleteUserModal = document.getElementById('deleteUserModal');
-    if (deleteUserModal) {
-        deleteUserModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const userId = button.getAttribute('data-user-id');
-            const userName = button.getAttribute('data-user-name');
-            const userEmail = button.getAttribute('data-user-email');
+    const deleteButtons = document.querySelectorAll('.delete-user-btn');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-user-id');
+            const userName = this.getAttribute('data-user-name');
+            const userEmail = this.getAttribute('data-user-email');
             
             // Update modal content
             document.getElementById('modal-user-name').textContent = userName;
@@ -284,8 +302,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update form action
             const form = document.getElementById('delete-user-form');
             form.action = '{{ route("admin.users.index") }}/' + userId;
+            
+            // Show modal
+            showDeleteUserModal();
         });
-    }
+    });
 });
 </script>
 @endsection

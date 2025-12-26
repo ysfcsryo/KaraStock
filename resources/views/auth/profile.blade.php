@@ -178,6 +178,11 @@
         border-left-color: #667eea;
     }
     
+    .profile-info-item.email input {
+        word-break: break-all;
+        font-size: 0.95rem;
+    }
+    
     .profile-info-item.date {
         border-left-color: #764ba2;
     }
@@ -320,6 +325,9 @@
                     <!-- Avatar with Upload Button -->
                     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
                         @csrf
+                        <!-- Hidden input for trigger photo upload only -->
+                        <input type="hidden" name="upload_type" value="full" id="uploadType">
+                        
                         <div class="profile-avatar-wrapper">
                             <div class="profile-avatar-inner">
                                 @if(Auth::user()->profile_photo)
@@ -331,7 +339,7 @@
                             <label for="profilePhotoInput" class="photo-upload-btn" title="Ubah Foto Profile">
                                 <i class="bi bi-camera-fill"></i>
                             </label>
-                            <input type="file" id="profilePhotoInput" name="profile_photo" accept="image/*">
+                            <input type="file" id="profilePhotoInput" name="profile_photo" accept="image/*" class="hidden">
                         </div>
                     
                     <!-- Name (Editable) -->
@@ -426,171 +434,264 @@
     @csrf
 </form>
 
-<!-- Modal Preview Upload -->
-<div class="modal fade" id="uploadPreviewModal" tabindex="-1" aria-labelledby="uploadPreviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- Modal Preview Upload - Custom Simple Modal -->
+<div id="uploadPreviewModal" class="custom-modal hidden">
+    <div class="custom-modal-overlay" onclick="closeUploadModal()"></div>
+    <div class="custom-modal-content">
         <div class="modal-content border-0 shadow-lg modal-rounded">
-            <div class="modal-header border-0 modal-header-gradient-purple">
-                <h5 class="modal-title text-white fw-bold" id="uploadPreviewModalLabel">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                <h5 class="modal-title text-white fw-bold">
                     <i class="bi bi-camera-fill me-2"></i>Preview Foto Profile
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" onclick="closeUploadModal()" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center p-4">
-                <div class="preview-container-circle mb-4">
-                    <img id="modalPreviewImage" src="" alt="Preview" class="preview-img-cover">
+            <div class="modal-body text-center py-5 px-4">
+                <div class="mb-4">
+                    <div class="preview-container-circle mx-auto" style="width: 200px; height: 200px; border-radius: 50%; overflow: hidden; border: 4px solid #6366f1; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);">
+                        <img id="modalPreviewImage" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                 </div>
-                <p class="text-muted mb-0">Upload foto profile ini?</p>
-                <small class="text-muted">Foto akan langsung disimpan</small>
+                <h4 class="fw-bold mb-2 text-dark">Upload Foto Ini?</h4>
+                <p class="text-muted mb-0 fs-6">Foto akan langsung disimpan sebagai profile Anda</p>
+                <div class="alert alert-info border-0 bg-primary bg-opacity-10 mt-3 mb-0">
+                    <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+                    <small class="text-primary fw-semibold">Maksimal ukuran: 2MB</small>
+                </div>
             </div>
-            <div class="modal-footer border-0 justify-content-center pb-4">
-                <button type="button" class="btn btn-modern btn-secondary" data-bs-dismiss="modal">
+            <div class="modal-footer border-0 justify-content-center pb-4 gap-2">
+                <button type="button" class="btn btn-lg btn-light px-5 shadow-sm" onclick="closeUploadModal()">
                     <i class="bi bi-x-circle me-2"></i>Batal
                 </button>
-                <button type="button" class="btn btn-modern btn-primary" onclick="confirmUpload()">
-                    <i class="bi bi-check2-circle me-2"></i>Upload Sekarang
+                <button type="button" class="btn btn-lg btn-primary px-5 shadow-sm" onclick="submitUpload()">
+                    <i class="bi bi-upload me-2"></i>Upload Sekarang
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Konfirmasi Hapus -->
-<div class="modal fade" id="deletePhotoModal" tabindex="-1" aria-labelledby="deletePhotoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- Modal Konfirmasi Hapus - Custom Simple Modal -->
+<div id="deletePhotoModal" class="custom-modal hidden">
+    <div class="custom-modal-overlay" onclick="closeDeleteModal()"></div>
+    <div class="custom-modal-content">
         <div class="modal-content border-0 shadow-lg modal-rounded">
-            <div class="modal-header border-0 modal-header-gradient-pink">
-                <h5 class="modal-title text-white fw-bold" id="deletePhotoModalLabel">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Konfirmasi Hapus
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Konfirmasi Hapus Foto
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" onclick="closeDeleteModal()" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center p-4">
-                <div class="mb-3">
-                    <i class="bi bi-trash modal-delete-icon"></i>
+            <div class="modal-body text-center py-5 px-4">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 80px; height: 80px; background: rgba(236, 72, 153, 0.1);">
+                        <i class="bi bi-trash-fill" style="font-size: 2.5rem; color: #ec4899;"></i>
+                    </div>
                 </div>
-                <h5 class="fw-bold mb-2">Hapus Foto Profile?</h5>
-                <p class="text-muted mb-0">Foto profile Anda akan dihapus dan kembali ke avatar default.</p>
+                <h4 class="fw-bold mb-3 text-dark">Hapus Foto Profile?</h4>
+                <p class="text-muted mb-3 fs-6">Foto profile Anda akan dihapus dan kembali ke avatar default.</p>
+                <div class="alert alert-warning border-0 bg-warning bg-opacity-10 mb-0">
+                    <i class="bi bi-info-circle-fill me-2 text-warning"></i>
+                    <small class="text-dark fw-semibold">Anda dapat upload foto baru kapan saja</small>
+                </div>
             </div>
-            <div class="modal-footer border-0 justify-content-center pb-4">
-                <button type="button" class="btn btn-modern btn-secondary" data-bs-dismiss="modal">
+            <div class="modal-footer border-0 justify-content-center pb-4 gap-2">
+                <button type="button" class="btn btn-lg btn-light px-5 shadow-sm" onclick="closeDeleteModal()">
                     <i class="bi bi-x-circle me-2"></i>Batal
                 </button>
-                <button type="button" class="btn btn-modern btn-danger" onclick="confirmDelete()">
-                    <i class="bi bi-trash me-2"></i>Hapus Foto
+                <button type="button" class="btn btn-lg btn-danger px-5 shadow-sm" onclick="submitDelete()">
+                    <i class="bi bi-trash-fill me-2"></i>Hapus Foto
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.custom-modal-content {
+    position: relative;
+    z-index: 2;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
         </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let selectedFile = null;
-        let uploadModal = null;
-        let deleteModal = null;
-        
-        // Initialize modals after DOM is ready
-        setTimeout(() => {
-            uploadModal = new bootstrap.Modal(document.getElementById('uploadPreviewModal'));
-            deleteModal = new bootstrap.Modal(document.getElementById('deletePhotoModal'));
-        }, 100);
+// Simple modal functions without Bootstrap
+function showUploadModal() {
+    const modal = document.getElementById('uploadPreviewModal');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
 
-        // Preview foto sebelum upload
-        document.getElementById('profilePhotoInput').addEventListener('change', function(e) {
+function closeUploadModal() {
+    const modal = document.getElementById('uploadPreviewModal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function showDeleteModal() {
+    const modal = document.getElementById('deletePhotoModal');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deletePhotoModal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function submitUpload() {
+    const form = document.getElementById('profileForm');
+    const photoInput = document.getElementById('profilePhotoInput');
+    
+    if (!photoInput.files || photoInput.files.length === 0) {
+        alert('Tidak ada file yang dipilih');
+        closeUploadModal();
+        return;
+    }
+    
+    // Set flag bahwa ini upload photo only
+    const uploadType = document.getElementById('uploadType');
+    if (uploadType) {
+        uploadType.value = 'photo_only';
+    }
+    
+    closeUploadModal();
+    
+    // Create FormData to ensure file is included
+    const formData = new FormData(form);
+    
+    // Use XMLHttpRequest to submit with file
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', form.action, true);
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            window.location.reload();
+        } else {
+            alert('Upload gagal. Silakan coba lagi.');
+            window.location.reload();
+        }
+    };
+    
+    xhr.onerror = function() {
+        alert('Terjadi kesalahan. Silakan coba lagi.');
+        window.location.reload();
+    };
+    
+    xhr.send(formData);
+}
+
+function submitDelete() {
+    closeDeleteModal();
+    document.getElementById('deletePhotoForm').submit();
+}
+
+// Main initialization
+document.addEventListener('DOMContentLoaded', function() {
+    const photoInput = document.getElementById('profilePhotoInput');
+    const modalPreviewImage = document.getElementById('modalPreviewImage');
+
+    if (photoInput) {
+        photoInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (file) {
-                // Validasi ukuran file (max 2MB)
-                if (file.size > 2048000) {
-                    alert('Ukuran file terlalu besar! Maksimal 2MB');
-                    this.value = '';
-                    return;
+            if (!file) return;
+            
+            // Validasi ukuran (max 2MB)
+            if (file.size > 2048000) {
+                alert('Ukuran file terlalu besar! Maksimal 2MB');
+                this.value = '';
+                return;
+            }
+            
+            // Validasi tipe file
+            if (!file.type.match('image.*')) {
+                alert('File harus berupa gambar!');
+                this.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Update preview di modal
+                if (modalPreviewImage) {
+                    modalPreviewImage.src = e.target.result;
                 }
                 
-                // Validasi tipe file
-                if (!file.type.match('image.*')) {
-                    alert('File harus berupa gambar!');
-                    this.value = '';
-                    return;
-                }
-                
-                selectedFile = file;
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    // Update preview in modal
-                    document.getElementById('modalPreviewImage').src = e.target.result;
-                    
-                    // Update main avatar preview
-                    const avatarInner = document.querySelector('.profile-avatar-inner');
+                // Update preview utama
+                const avatarInner = document.querySelector('.profile-avatar-inner');
+                if (avatarInner) {
                     const defaultAvatar = document.getElementById('defaultAvatar');
-                    
-                    if (defaultAvatar) {
-                        defaultAvatar.remove();
-                    }
+                    if (defaultAvatar) defaultAvatar.remove();
                     
                     let img = document.getElementById('profilePreview');
                     if (!img) {
                         img = document.createElement('img');
                         img.id = 'profilePreview';
                         img.alt = 'Profile Photo';
-                        img.style.width = '100%';
-                        img.style.height = '100%';
-                        img.style.objectFit = 'cover';
+                        img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
                         avatarInner.appendChild(img);
                     }
                     img.src = e.target.result;
-                    
-                    // Show modal dengan delay untuk memastikan sudah terinisialisasi
-                    setTimeout(() => {
-                        if (uploadModal) {
-                            uploadModal.show();
-                        } else {
-                            // Fallback jika modal belum terinisialisasi
-                            uploadModal = new bootstrap.Modal(document.getElementById('uploadPreviewModal'));
-                            uploadModal.show();
-                        }
-                    }, 150);
-                };
+                }
                 
-                reader.readAsDataURL(file);
-            }
+                // Tampilkan modal
+                showUploadModal();
+            };
+            reader.readAsDataURL(file);
         });
-        
-        // Konfirmasi upload - make it global
-        window.confirmUpload = function() {
-            if (uploadModal) {
-                uploadModal.hide();
-            }
-            
-            // Show loading
-            const submitBtn = document.querySelector('button[type="submit"].btn-modern.btn-primary');
-            if (submitBtn) {
-                const originalText = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengupload...';
-            }
-            
-            // Submit form
-            document.getElementById('profileForm').submit();
-        };
-        
-        // Fungsi hapus foto dengan modal - make it global
-        window.deletePhoto = function() {
-            if (deleteModal) {
-                deleteModal.show();
-            } else {
-                deleteModal = new bootstrap.Modal(document.getElementById('deletePhotoModal'));
-                deleteModal.show();
-            }
-        };
-        
-        window.confirmDelete = function() {
-            if (deleteModal) {
-                deleteModal.hide();
-            }
-            document.getElementById('deletePhotoForm').submit();
-        };
-    });
+    }
+});
+
+// Fungsi untuk hapus foto (dipanggil dari button)
+function deletePhoto() {
+    showDeleteModal();
+}
 </script>
 @endsection

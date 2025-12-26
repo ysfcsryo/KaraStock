@@ -10,7 +10,7 @@
         </h4>
         
         @if($histories->count() > 0)
-        <button type="button" class="btn btn-danger btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#deleteAllModal">
+        <button type="button" class="btn btn-danger btn-sm shadow-sm" onclick="showDeleteAllModal()">
             <i class="bi bi-trash"></i> Hapus Semua Data
         </button>
         @endif
@@ -41,22 +41,23 @@
                 </div>
                 <div class="list-group list-group-flush">
                     @forelse($files as $f)
-                        <div class="list-group-item p-0 {{ request('file') == $f ? 'bg-primary bg-opacity-10' : '' }}">
+                        <div class="list-group-item py-4 {{ request('file') == $f ? 'bg-primary bg-opacity-10 border-start border-4 border-primary' : '' }}">
                             <a href="{{ route('riwayat.index', ['file' => $f]) }}" 
-                               class="d-block p-3 text-decoration-none file-list-item-transition {{ request('file') == $f ? 'border-start border-4 border-primary' : '' }}">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1 me-2">
-                                        <div class="d-flex align-items-center mb-1">
-                                            <i class="bi bi-file-earmark-spreadsheet {{ request('file') == $f ? 'text-primary' : 'text-success' }} me-2 fs-5"></i>
-                                            <span class="fw-bold {{ request('file') == $f ? 'text-primary' : 'text-dark' }}">
-                                                {{ Str::limit($f, 30) }}
-                                            </span>
-                                        </div>
-                                        <small class="text-muted d-block mb-1">
-                                            <i class="bi bi-database"></i> {{ $histories->where('nama_file', $f)->count() }} data
-                                        </small>
-                                        <small class="text-muted d-block">
-                                            <i class="bi bi-clock"></i> 
+                               class="text-decoration-none d-block">
+                                <div class="text-center mb-3">
+                                    <i class="bi bi-file-earmark-spreadsheet {{ request('file') == $f ? 'text-primary' : 'text-success' }} fs-1 mb-2"></i>
+                                    <h6 class="fw-bold mb-0 {{ request('file') == $f ? 'text-primary' : 'text-dark' }}">
+                                        {{ Str::limit($f, 30) }}
+                                    </h6>
+                                </div>
+                                <div class="text-center mb-3">
+                                    <div class="mb-1">
+                                        <i class="bi bi-database text-muted"></i> 
+                                        <small class="text-muted">{{ $histories->where('nama_file', $f)->count() }} data</small>
+                                    </div>
+                                    <div class="mb-1">
+                                        <i class="bi bi-clock text-muted"></i> 
+                                        <small class="text-muted">
                                             @if($fileTimestamps[$f])
                                                 @php
                                                     $uploadTime = \Carbon\Carbon::parse($fileTimestamps[$f]);
@@ -71,19 +72,21 @@
                                                 -
                                             @endif
                                         </small>
-                                        <small class="text-muted d-block">
-                                            <i class="bi bi-person-fill"></i> 
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-person-fill text-muted"></i> 
+                                        <small class="text-muted">
                                             @if(isset($fileUploaders[$f]) && $fileUploaders[$f])
                                                 {{ $fileUploaders[$f]->name }}
                                             @else
-                                                <span class="text-muted fst-italic">Tidak diketahui</span>
+                                                <span class="fst-italic">Tidak diketahui</span>
                                             @endif
                                         </small>
                                     </div>
                                 </div>
                             </a>
                             
-                            <div class="d-flex gap-1 px-3 pb-3 pt-0">
+                            <div class="d-flex gap-2">
                                 <a href="{{ route('proses.file', ['file' => $f]) }}" 
                                    class="btn btn-sm btn-outline-primary flex-fill" 
                                    title="Lihat Visualisasi">
@@ -191,30 +194,39 @@
     </div>
 </div>
 
-<!-- Modal Delete All -->
-<div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-danger text-white border-0">
-                <h5 class="modal-title" id="deleteAllModalLabel">
+<!-- Modal Delete All - Custom Modal -->
+<div id="deleteAllModal" class="custom-modal hidden">
+    <div class="custom-modal-overlay" onclick="closeDeleteAllModal()"></div>
+    <div class="custom-modal-content">
+        <div class="modal-content border-0 shadow-lg modal-rounded">
+            <div class="modal-header bg-gradient text-white border-0" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
+                <h5 class="modal-title fw-bold">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>Konfirmasi Hapus Semua
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" onclick="closeDeleteAllModal()" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center py-4">
-                <i class="bi bi-trash3 text-danger mb-3 modal-icon-lg"></i>
-                <h6 class="fw-bold mb-2">Yakin ingin menghapus SEMUA riwayat?</h6>
-                <p class="text-muted mb-0">Data yang dihapus tidak dapat dikembalikan lagi.</p>
+            <div class="modal-body text-center py-5 px-4">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10" style="width: 80px; height: 80px;">
+                        <i class="bi bi-trash3-fill text-danger" style="font-size: 2.5rem;"></i>
+                    </div>
+                </div>
+                <h4 class="fw-bold mb-3 text-dark">Hapus Semua Riwayat?</h4>
+                <p class="text-muted mb-4 fs-6">Yakin ingin menghapus <strong>SEMUA</strong> riwayat yang tersimpan?</p>
+                <div class="alert alert-danger border-0 bg-danger bg-opacity-10 mb-0">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <small class="text-danger fw-semibold">Data yang dihapus tidak dapat dikembalikan lagi!</small>
+                </div>
             </div>
-            <div class="modal-footer border-0 justify-content-center pb-4">
-                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i> Batal
+            <div class="modal-footer border-0 justify-content-center pb-4 gap-2">
+                <button type="button" class="btn btn-lg btn-light px-5 shadow-sm" onclick="closeDeleteAllModal()">
+                    <i class="bi bi-x-circle me-2"></i>Batal
                 </button>
                 <form action="{{ route('riwayat.hapusSemua') }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger px-4">
-                        <i class="bi bi-trash me-1"></i> Ya, Hapus Semua
+                    <button type="submit" class="btn btn-lg btn-danger px-5 shadow-sm">
+                        <i class="bi bi-trash-fill me-2"></i>Ya, Hapus Semua
                     </button>
                 </form>
             </div>
@@ -222,28 +234,40 @@
     </div>
 </div>
 
-<!-- Modal Delete File -->
-<div class="modal fade" id="deleteFileModal" tabindex="-1" aria-labelledby="deleteFileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-warning border-0">
-                <h5 class="modal-title text-dark" id="deleteFileModalLabel">
+<!-- Modal Delete File - Custom Modal -->
+<div id="deleteFileModal" class="custom-modal hidden">
+    <div class="custom-modal-overlay" onclick="closeDeleteFileModal()"></div>
+    <div class="custom-modal-content">
+        <div class="modal-content border-0 shadow-lg modal-rounded">
+            <div class="modal-header bg-gradient text-white border-0" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                <h5 class="modal-title fw-bold">
                     <i class="bi bi-exclamation-circle-fill me-2"></i>Konfirmasi Hapus File
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" onclick="closeDeleteFileModal()" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center py-4">
-                <i class="bi bi-file-earmark-x text-warning mb-3 modal-icon-lg"></i>
-                <h6 class="fw-bold mb-2">Hapus riwayat untuk file:</h6>
-                <p class="text-primary fw-bold mb-2" id="deleteFileName"></p>
-                <p class="text-muted small mb-0">Data yang dihapus tidak dapat dikembalikan.</p>
+            <div class="modal-body text-center py-5 px-4">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10" style="width: 80px; height: 80px;">
+                        <i class="bi bi-file-earmark-x-fill text-warning" style="font-size: 2.5rem;"></i>
+                    </div>
+                </div>
+                <h4 class="fw-bold mb-3 text-dark">Hapus Riwayat File?</h4>
+                <p class="text-muted mb-2 fs-6">Hapus semua riwayat untuk file:</p>
+                <div class="alert alert-warning border-0 bg-warning bg-opacity-10 mb-3">
+                    <i class="bi bi-file-earmark-spreadsheet-fill me-2 text-warning"></i>
+                    <strong class="text-dark" id="deleteFileName">-</strong>
+                </div>
+                <small class="text-muted d-block">
+                    <i class="bi bi-info-circle-fill me-1"></i>
+                    Data yang dihapus tidak dapat dikembalikan
+                </small>
             </div>
-            <div class="modal-footer border-0 justify-content-center pb-4">
-                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i> Batal
+            <div class="modal-footer border-0 justify-content-center pb-4 gap-2">
+                <button type="button" class="btn btn-lg btn-light px-5 shadow-sm" onclick="closeDeleteFileModal()">
+                    <i class="bi bi-x-circle me-2"></i>Batal
                 </button>
-                <button type="button" class="btn btn-danger px-4" id="confirmDeleteFile">
-                    <i class="bi bi-trash me-1"></i> Ya, Hapus
+                <button type="button" class="btn btn-lg btn-danger px-5 shadow-sm" id="confirmDeleteFile">
+                    <i class="bi bi-trash-fill me-2"></i>Ya, Hapus
                 </button>
             </div>
         </div>
@@ -251,12 +275,41 @@
 </div>
 
 <script>
-    // Handle delete file button click
+    // Custom Modal Functions
     let currentForm = null;
     
+    function showDeleteAllModal() {
+        const modal = document.getElementById('deleteAllModal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDeleteAllModal() {
+        const modal = document.getElementById('deleteAllModal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    function showDeleteFileModal() {
+        const modal = document.getElementById('deleteFileModal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDeleteFileModal() {
+        const modal = document.getElementById('deleteFileModal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        currentForm = null;
+    }
+    
+    // Handle delete file button click
     document.addEventListener('DOMContentLoaded', function() {
         const deleteFileButtons = document.querySelectorAll('.delete-file-btn');
-        const deleteFileModal = new bootstrap.Modal(document.getElementById('deleteFileModal'));
         const confirmDeleteBtn = document.getElementById('confirmDeleteFile');
         const deleteFileNameEl = document.getElementById('deleteFileName');
         
@@ -265,7 +318,7 @@
                 const filename = this.getAttribute('data-filename');
                 currentForm = this.closest('.delete-file-form');
                 deleteFileNameEl.textContent = filename;
-                deleteFileModal.show();
+                showDeleteFileModal();
             });
         });
         

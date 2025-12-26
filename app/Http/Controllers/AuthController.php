@@ -89,7 +89,14 @@ class AuthController extends Controller
 
             $file = $request->file('profile_photo');
             $filename = 'profile_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/profiles'), $filename);
+            
+            // Create directory if not exists
+            $uploadPath = public_path('uploads/profiles');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            
+            $file->move($uploadPath, $filename);
             $user->profile_photo = 'uploads/profiles/' . $filename;
         }
 
