@@ -43,8 +43,7 @@
                     @forelse($files as $f)
                         <div class="list-group-item p-0 {{ request('file') == $f ? 'bg-primary bg-opacity-10' : '' }}">
                             <a href="{{ route('riwayat.index', ['file' => $f]) }}" 
-                               class="d-block p-3 text-decoration-none {{ request('file') == $f ? 'border-start border-4 border-primary' : '' }}"
-                               style="transition: all 0.2s;">
+                               class="d-block p-3 text-decoration-none file-list-item-transition {{ request('file') == $f ? 'border-start border-4 border-primary' : '' }}">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div class="flex-grow-1 me-2">
                                         <div class="d-flex align-items-center mb-1">
@@ -133,7 +132,7 @@
                     @endif
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 600px;">
+                    <div class="table-responsive table-scroll-container">
                         <table class="table table-hover mb-0 align-middle">
                             <thead class="table-light sticky-top">
                                 <tr>
@@ -203,7 +202,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center py-4">
-                <i class="bi bi-trash3 text-danger mb-3" style="font-size: 4rem;"></i>
+                <i class="bi bi-trash3 text-danger mb-3 modal-icon-lg"></i>
                 <h6 class="fw-bold mb-2">Yakin ingin menghapus SEMUA riwayat?</h6>
                 <p class="text-muted mb-0">Data yang dihapus tidak dapat dikembalikan lagi.</p>
             </div>
@@ -234,7 +233,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center py-4">
-                <i class="bi bi-file-earmark-x text-warning mb-3" style="font-size: 4rem;"></i>
+                <i class="bi bi-file-earmark-x text-warning mb-3 modal-icon-lg"></i>
                 <h6 class="fw-bold mb-2">Hapus riwayat untuk file:</h6>
                 <p class="text-primary fw-bold mb-2" id="deleteFileName"></p>
                 <p class="text-muted small mb-0">Data yang dihapus tidak dapat dikembalikan.</p>

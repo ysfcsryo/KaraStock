@@ -336,9 +336,8 @@
                     
                     <!-- Name (Editable) -->
                     <div class="mt-4 text-center">
-                        <input type="text" name="name" class="form-control text-center fw-bold fs-4 border-0 bg-transparent profile-name-input" 
-                               value="{{ Auth::user()->name }}" required 
-                               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        <input type="text" name="name" class="form-control text-center fw-bold fs-4 border-0 bg-transparent profile-name-input profile-name-gradient" 
+                               value="{{ Auth::user()->name }}" required>
                     </div>
                     
                     <!-- Email (Editable) -->
@@ -423,23 +422,23 @@
 </div>
 
 <!-- Form untuk hapus foto -->
-<form id="deletePhotoForm" action="{{ route('profile.deletePhoto') }}" method="POST" style="display: none;">
+<form id="deletePhotoForm" action="{{ route('profile.deletePhoto') }}" method="POST" class="profile-form-hidden">
     @csrf
 </form>
 
 <!-- Modal Preview Upload -->
 <div class="modal fade" id="uploadPreviewModal" tabindex="-1" aria-labelledby="uploadPreviewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-            <div class="modal-header border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="modal-content border-0 shadow-lg modal-rounded">
+            <div class="modal-header border-0 modal-header-gradient-purple">
                 <h5 class="modal-title text-white fw-bold" id="uploadPreviewModalLabel">
                     <i class="bi bi-camera-fill me-2"></i>Preview Foto Profile
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-4">
-                <div class="preview-container mb-4" style="width: 200px; height: 200px; margin: 0 auto; border-radius: 50%; overflow: hidden; border: 5px solid #667eea; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
-                    <img id="modalPreviewImage" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="preview-container-circle mb-4">
+                    <img id="modalPreviewImage" src="" alt="Preview" class="preview-img-cover">
                 </div>
                 <p class="text-muted mb-0">Upload foto profile ini?</p>
                 <small class="text-muted">Foto akan langsung disimpan</small>
@@ -459,8 +458,8 @@
 <!-- Modal Konfirmasi Hapus -->
 <div class="modal fade" id="deletePhotoModal" tabindex="-1" aria-labelledby="deletePhotoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-            <div class="modal-header border-0" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <div class="modal-content border-0 shadow-lg modal-rounded">
+            <div class="modal-header border-0 modal-header-gradient-pink">
                 <h5 class="modal-title text-white fw-bold" id="deletePhotoModalLabel">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>Konfirmasi Hapus
                 </h5>
@@ -468,7 +467,7 @@
             </div>
             <div class="modal-body text-center p-4">
                 <div class="mb-3">
-                    <i class="bi bi-trash" style="font-size: 4rem; color: #f5576c;"></i>
+                    <i class="bi bi-trash modal-delete-icon"></i>
                 </div>
                 <h5 class="fw-bold mb-2">Hapus Foto Profile?</h5>
                 <p class="text-muted mb-0">Foto profile Anda akan dihapus dan kembali ke avatar default.</p>

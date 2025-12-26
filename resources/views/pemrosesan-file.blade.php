@@ -46,9 +46,9 @@
             <div class="tab-content" id="treeTabContent">
                 <div class="tab-pane fade show active" id="grafik" role="tabpanel">
                     <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-body bg-white text-center p-3" style="min-height: 500px; overflow: auto; background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px;">
-                            <div style="width: 100%; height: 100%; min-height: 500px; display: flex; justify-content: center; align-items: center;">
-                                <svg id="treeSvg" viewBox="0 0 1000 600" style="max-width: 100%; height: auto; min-height: 500px;"></svg>
+                        <div class="card-body bg-white text-center p-3 tree-card-body">
+                            <div class="tree-svg-container">
+                                <svg id="treeSvg" viewBox="0 0 1000 600" class="tree-svg"></svg>
                             </div>
                         </div>
                         <div class="card-footer bg-light small text-muted">
@@ -246,15 +246,15 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0" style="max-height: 500px; display: flex; flex-direction: column;">
+            <div class="card shadow-sm border-0 data-check-card">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold m-0 text-dark"><i class="bi bi-database-check"></i> Cek Data Masuk</h6>
                     <span class="badge bg-primary rounded-pill">{{ count($rawData ?? []) }}</span>
                 </div>
                 
-                <div class="card-body p-0" style="overflow-y: auto; flex-grow: 1;">
-                    <table class="table table-sm table-hover mb-0 small" style="font-size: 0.8rem;">
-                        <thead class="table-light sticky-top" style="top: 0; z-index: 2;">
+                <div class="card-body p-0 data-check-body">
+                    <table class="table table-sm table-hover mb-0 small data-check-table">
+                        <thead class="table-light sticky-top data-check-thead">
                             <tr>
                                 <th>Produk</th>
                                 <th>Fitur (K/K/P/D)</th>
@@ -264,7 +264,7 @@
                         <tbody>
                             @forelse($rawData ?? [] as $row)
                             <tr>
-                                <td class="text-truncate" style="max-width: 100px;" title="{{ $row->nama_produk }}">
+                                <td class="text-truncate data-check-product" title="{{ $row->nama_produk }}">
                                     {{ $row->nama_produk }}
                                 </td>
                                 <td>

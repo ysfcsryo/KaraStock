@@ -40,7 +40,7 @@
                         <i class="bi bi-cloud-arrow-up"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0" style="color: #10b981;">Unggah Data Penjualan</h4>
+                        <h4 class="fw-bold mb-0 upload-title">Unggah Data Penjualan</h4>
                         <small class="text-muted">Pilih file CSV berisi data penjualan Anda</small>
                     </div>
                 </div>
@@ -51,15 +51,15 @@
                 </p>
 
                 <!-- Download Template -->
-                <div class="alert alert-success border-0 mb-4" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+                <div class="alert alert-success border-0 mb-4 template-download-alert">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="fw-bold mb-1" style="color: #065f46;">
+                            <h6 class="fw-bold mb-1 template-download-title">
                                 <i class="bi bi-download"></i> Belum punya template?
                             </h6>
                             <small class="text-muted">Download template CSV dan isi dengan data penjualan Anda</small>
                         </div>
-                        <a href="{{ asset('template_karastock.csv') }}" download="Template_KaraStock.csv" class="btn btn-sm" style="background: #10b981; color: white; font-weight: 600;">
+                        <a href="{{ asset('template_karastock.csv') }}" download="Template_KaraStock.csv" class="btn btn-sm template-download-btn">
                             <i class="bi bi-file-earmark-arrow-down"></i> Download Template
                         </a>
                     </div>
@@ -71,7 +71,7 @@
 
                     <div class="upload-area" id="dropZone">
                         <div class="mb-3">
-                            <i class="bi bi-file-earmark-spreadsheet display-3 mb-3" style="color: #6366f1;"></i>
+                            <i class="bi bi-file-earmark-spreadsheet display-3 mb-3 upload-icon-primary"></i>
                             <h6 class="fw-bold text-dark">Seret file CSV ke sini</h6>
                             <p class="text-muted small mb-3">atau klik untuk memilih file</p>
                         </div>
@@ -108,10 +108,10 @@
     <div class="col-lg-4">
         <div class="card card-interactive shadow-sm h-100">
             <div class="card-body p-3">
-                <h6 class="fw-bold mb-3" style="font-size: 0.95rem;">
-                    <i class="bi bi-gear" style="color: #6366f1;"></i> Cara Kerja Sistem
+                <h6 class="fw-bold mb-3 section-title-sm">
+                    <i class="bi bi-gear section-icon-primary"></i> Cara Kerja Sistem
                 </h6>
-                <ol class="ps-3 mb-0" style="font-size: 0.813rem; line-height: 1.6;">
+                <ol class="ps-3 mb-0 text-content-sm">
                     <li class="mb-2"><strong>Unggah</strong> data CSV</li>
                     <li class="mb-2"><strong>Labeling</strong> otomatis</li>
                     <li class="mb-2"><strong>Training</strong> Decision Tree</li>
@@ -125,10 +125,10 @@
     <div class="col-lg-4">
         <div class="card card-interactive shadow-sm h-100">
             <div class="card-body p-3">
-                <h6 class="fw-bold mb-3" style="font-size: 0.95rem;">
-                    <i class="bi bi-file-earmark-spreadsheet" style="color: #10b981;"></i> Format Data
+                <h6 class="fw-bold mb-3 section-title-sm">
+                    <i class="bi bi-file-earmark-spreadsheet section-icon-success"></i> Format Data
                 </h6>
-                <ul class="feature-list mb-0" style="font-size: 0.813rem;">
+                <ul class="feature-list mb-0 feature-list-sm">
                     <li><strong>Produk</strong> - nama produk</li>
                     <li><strong>Kategori</strong> - jenis produk</li>
                     <li><strong>Kelas Harga</strong> - Ekonomis/Standar/Premium</li>
@@ -143,75 +143,75 @@
     <div class="col-lg-4">
         <div class="card card-interactive shadow-sm h-100">
             <div class="card-body p-3">
-                <h6 class="fw-bold mb-3" style="font-size: 0.95rem;">
-                    <i class="bi bi-info-circle-fill" style="color: #f59e0b;"></i> Panduan Kategorisasi
+                <h6 class="fw-bold mb-3 section-title-sm">
+                    <i class="bi bi-info-circle-fill section-icon-warning"></i> Panduan Kategorisasi
                 </h6>
-                <div class="accordion accordion-flush" id="panduanAccordion" style="font-size: 0.813rem;">
-                    <div class="accordion-item border-0 mb-1" style="background: #f8fafc;">
+                <div class="accordion accordion-flush accordion-compact" id="panduanAccordion">
+                    <div class="accordion-item border-0 mb-1 accordion-item-compact">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHarga" style="font-size: 0.813rem; background: #f8fafc;">
+                            <button class="accordion-button collapsed p-2 accordion-button-compact" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHarga">
                                 <i class="bi bi-tag-fill text-primary me-2"></i> Kelas Harga
                             </button>
                         </h2>
                         <div id="collapseHarga" class="accordion-collapse collapse" data-bs-parent="#panduanAccordion">
-                            <div class="accordion-body p-2" style="font-size: 0.75rem;">
+                            <div class="accordion-body p-2 accordion-body-sm">
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class="text-muted">< Rp 150k</span>
-                                    <span class="badge bg-success" style="font-size: 0.7rem;">Ekonomis</span>
+                                    <span class="badge bg-success badge-compact">Ekonomis</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class="text-muted">Rp 150k-250k</span>
-                                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Standar</span>
+                                    <span class="badge bg-warning text-dark badge-compact">Standar</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <span class="text-muted">> Rp 250k</span>
-                                    <span class="badge bg-danger" style="font-size: 0.7rem;">Premium</span>
+                                    <span class="badge bg-danger badge-compact">Premium</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="accordion-item border-0 mb-1" style="background: #f8fafc;">
+                    <div class="accordion-item border-0 mb-1 accordion-item-compact">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerforma" style="font-size: 0.813rem; background: #f8fafc;">
+                            <button class="accordion-button collapsed p-2 accordion-button-compact" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerforma">
                                 <i class="bi bi-graph-up-arrow text-primary me-2"></i> Performa
                             </button>
                         </h2>
                         <div id="collapsePerforma" class="accordion-collapse collapse" data-bs-parent="#panduanAccordion">
-                            <div class="accordion-body p-2" style="font-size: 0.75rem;">
+                            <div class="accordion-body p-2 accordion-body-sm">
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class="text-muted">< 10 pcs</span>
-                                    <span class="badge bg-danger" style="font-size: 0.7rem;">Macet</span>
+                                    <span class="badge bg-danger badge-compact">Macet</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class="text-muted">10-30 pcs</span>
-                                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Sedang</span>
+                                    <span class="badge bg-warning text-dark badge-compact">Sedang</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <span class="text-muted">> 30 pcs</span>
-                                    <span class="badge bg-success" style="font-size: 0.7rem;">Laris</span>
+                                    <span class="badge bg-success badge-compact">Laris</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="accordion-item border-0" style="background: #f8fafc;">
+                    <div class="accordion-item border-0 accordion-item-compact">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDurasi" style="font-size: 0.813rem; background: #f8fafc;">
+                            <button class="accordion-button collapsed p-2 accordion-button-compact" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDurasi">
                                 <i class="bi bi-clock-history text-primary me-2"></i> Durasi Endap
                             </button>
                         </h2>
                         <div id="collapseDurasi" class="accordion-collapse collapse" data-bs-parent="#panduanAccordion">
-                            <div class="accordion-body p-2" style="font-size: 0.75rem;">
+                            <div class="accordion-body p-2 accordion-body-sm">
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class="text-muted">< 30 hari</span>
-                                    <span class="badge bg-success" style="font-size: 0.7rem;">Baru</span>
+                                    <span class="badge bg-success badge-compact">Baru</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class="text-muted">30-60 hari</span>
-                                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Normal</span>
+                                    <span class="badge bg-warning text-dark badge-compact">Normal</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <span class="text-muted">> 60 hari</span>
-                                    <span class="badge bg-danger" style="font-size: 0.7rem;">Lama</span>
+                                    <span class="badge bg-danger badge-compact">Lama</span>
                                 </div>
                             </div>
                         </div>
@@ -301,17 +301,17 @@
             <div class="bg-white border rounded-3 overflow-hidden shadow-sm">
                 <div class="bg-light px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-list-check me-2" style="color: #6366f1;"></i>
+                        <i class="bi bi-list-check me-2 results-list-icon"></i>
                         Rekomendasi Per Produk
                     </h5>
                     <span class="badge bg-primary">{{ count(session('list_produk')) }} Produk</span>
                 </div>
-                <div style="max-height: 600px; overflow-y: auto;">
+                <div class="results-scroll-container">
                     @foreach(session('list_produk') as $index => $item)
-                    <div style="display: grid; grid-template-columns: 60px 2fr 1fr 1.5fr 2fr; gap: 1rem; align-items: center; padding: 1.5rem; border-bottom: 1px solid #f1f5f9;">
-                        <div style="text-align: center; color: #94a3b8; font-weight: 600;">{{ $index + 1 }}</div>
-                        <div style="font-weight: 600; color: #1e293b;">{{ $item['nama'] }}</div>
-                        <div style="background: #f8fafc; padding: 0.5rem; border-radius: 8px; text-align: center; font-size: 0.85rem;">
+                    <div class="results-grid-row">
+                        <div class="results-row-number">{{ $index + 1 }}</div>
+                        <div class="results-row-product">{{ $item['nama'] }}</div>
+                        <div class="results-row-sold">
                             <strong>{{ $item['terjual'] }} pcs</strong>
                         </div>
                         <div>
@@ -320,7 +320,7 @@
                                 {{ $isIncrease ? '↑' : '↓' }} {{ str_replace('STOCK', 'STOK', $item['status']) }}
                             </span>
                         </div>
-                        <div style="color: #64748b; font-size: 0.85rem;">
+                        <div class="results-row-suggestion">
                             <i class="bi bi-lightbulb me-1"></i> {{ $item['saran'] }}
                         </div>
                     </div>

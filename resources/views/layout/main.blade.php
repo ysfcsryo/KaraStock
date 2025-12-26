@@ -37,7 +37,7 @@
 
             <div class="sidebar-header">
                 <div class="brand-container">
-                    <img src="{{ asset('assets/images/logoKaraStock.png') }}" alt="KaraStock Logo" style="width: 45px; height: 45px; object-fit: contain;" class="me-2">
+                    <img src="{{ asset('assets/images/logoKaraStock.png') }}" alt="KaraStock Logo" class="me-2 logo-sidebar">
                     <div class="d-flex flex-column">
                         <span class="brand-text fw-bold fs-5">KaraStock</span>
                         <span class="small text-white-50 brand-subtitle">Decision Tree Stock Advisor</span>
@@ -85,15 +85,15 @@
                     
                     <!-- Page Title/Breadcrumb - Show on all screen sizes -->
                     <div class="navbar-brand mb-0 h1 ms-2">
-                        <img src="{{ asset('assets/images/logoKaraStock.png') }}" alt="KaraStock" style="width: 32px; height: 32px; object-fit: contain;" class="me-2">
+                        <img src="{{ asset('assets/images/logoKaraStock.png') }}" alt="KaraStock" class="me-2 logo-navbar">
                         <span class="fw-semibold">KaraStock</span>
                     </div>
 
                     <!-- Right Side Actions -->
                     <div class="ms-auto d-flex align-items-center gap-2">
                         <!-- Profile Dropdown -->
-                        <div class="dropdown" style="position: relative;">
-                            <button class="nav-profile-trigger d-flex align-items-center gap-2 text-decoration-none border-0 bg-transparent" type="button" id="navProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                        <div class="dropdown profile-dropdown">
+                            <button class="nav-profile-trigger d-flex align-items-center gap-2 text-decoration-none border-0 bg-transparent profile-dropdown-trigger" type="button" id="navProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="nav-profile-info text-end d-none d-md-block">
                                     <div class="nav-profile-name">{{ Auth::user()->name }}</div>
                                     <div class="nav-profile-role">{{ Auth::user()->role === 'super_admin' ? 'Super Admin' : 'Admin' }}</div>
@@ -106,14 +106,14 @@
                                     @endif
                                 </div>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end profile-menu shadow-lg" aria-labelledby="navProfileDropdown" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 0.5rem;">
+                            <ul class="dropdown-menu dropdown-menu-end profile-menu shadow-lg profile-dropdown-menu" aria-labelledby="navProfileDropdown">
                                 <!-- Profile Header with Background -->
                                 <li class="dropdown-header p-0 border-0">
                                     <div class="profile-menu-header">
                                         <div class="d-flex align-items-center p-3">
                                             <div class="profile-avatar-large me-3">
                                                 @if(Auth::user()->profile_photo)
-                                                    <img src="{{ asset(Auth::user()->profile_photo) }}" alt="{{ Auth::user()->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                    <img src="{{ asset(Auth::user()->profile_photo) }}" alt="{{ Auth::user()->name }}" class="profile-avatar-img">
                                                 @else
                                                     <i class="bi bi-person-circle"></i>
                                                 @endif
@@ -177,7 +177,7 @@
             </div>
 
             <footer class="text-center text-muted small pb-3 mt-2">
-                &copy; {{ date('Y') }} KaraStock · <span style="color: var(--color-primary);">Decision Support System</span>
+                &copy; {{ date('Y') }} KaraStock · <span class="footer-primary-text">Decision Support System</span>
             </footer>
         </div>
 

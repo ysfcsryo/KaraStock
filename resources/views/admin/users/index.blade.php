@@ -167,7 +167,7 @@
                         </div>
                         <div class="flex-grow-1">
                             <h5 class="mb-2 fw-bold">{{ $user->name }}</h5>
-                            <p class="text-muted small mb-2" style="line-height: 1.4;">
+                            <p class="text-muted small mb-2 user-info-compact">
                                 <i class="bi bi-envelope me-1"></i>{{ $user->email }}
                             </p>
                             <span class="role-badge role-{{ str_replace('_', '-', $user->role) }}">
@@ -187,7 +187,7 @@
                         </div>
                     </div>
 
-                    <div class="d-flex gap-2 mt-auto" style="min-height: 38px;">
+                    <div class="d-flex gap-2 mt-auto action-buttons-container">
                         @if($user->id !== auth()->id() || $user->role === 'super_admin')
                         <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-primary flex-grow-1">
                             <i class="bi bi-pencil me-1"></i>Edit
@@ -213,7 +213,7 @@
 
     @if($users->isEmpty())
     <div class="text-center py-5">
-        <i class="bi bi-people" style="font-size: 4rem; color: #ccc;"></i>
+        <i class="bi bi-people empty-state-icon"></i>
         <p class="text-muted mt-3">Belum ada user terdaftar</p>
     </div>
     @endif
@@ -231,8 +231,8 @@
             </div>
             <div class="modal-body p-4">
                 <div class="text-center mb-3">
-                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                        <i class="bi bi-person-x-fill text-danger" style="font-size: 2.5rem;"></i>
+                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center delete-icon-container">
+                        <i class="bi bi-person-x-fill text-danger delete-icon-lg"></i>
                     </div>
                 </div>
                 <h5 class="text-center mb-3">Apakah Anda yakin ingin menghapus user ini?</h5>
@@ -254,7 +254,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle me-1"></i>Batal
                 </button>
-                <form id="delete-user-form" method="POST" action="" style="display: inline;">
+                <form id="delete-user-form" method="POST" action="" class="form-inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">

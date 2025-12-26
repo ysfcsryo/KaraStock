@@ -38,7 +38,7 @@
                             </a>
                         @endif
 
-                        <div class="input-group input-group-sm" style="max-width: 280px;">
+                        <div class="input-group input-group-sm file-filter-group">
                             <span class="input-group-text bg-white border-primary text-primary">
                                 <i class="bi bi-clock-history"></i>
                             </span>
@@ -99,7 +99,7 @@
             <div class="col-lg-3 col-md-4">
                 <div class="card shadow-sm border-0 h-100 bg-primary text-white position-relative overflow-hidden">
                     <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                        <i class="bi bi-box-seam fs-1" style="transform: rotate(15deg);"></i>
+                        <i class="bi bi-box-seam fs-1 empty-state-icon-rotate"></i>
                     </div>
                     <div class="card-body d-flex flex-column justify-content-center">
                         <div class="small text-white-50 text-uppercase fw-bold">Total Data</div>
@@ -219,7 +219,7 @@
                                     <td>
                                         <div class="d-flex align-items-start">
                                             <i class="bi bi-info-circle-fill text-{{ strpos($row['warna'], 'warning') !== false ? 'warning' : ($row['warna'] == 'dark' ? 'danger' : 'primary') }} me-2 mt-1"></i>
-                                            <small class="text-muted fw-semibold" style="line-height: 1.4;">
+                                            <small class="text-muted fw-semibold suggestion-text-compact">
                                                 {{ $row['saran'] }}
                                             </small>
                                         </div>
